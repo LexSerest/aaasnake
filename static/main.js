@@ -246,7 +246,7 @@ var Direction;
 })(Direction || (Direction = {}));
 var Snake;
 (function (Snake) {
-    Snake.isStart = true;
+    Snake.isStart = false;
     Snake.isPause = false;
     Snake.isLockKeyboard = false;
     Snake.onStart = null;
@@ -267,6 +267,8 @@ var Snake;
                 Keyboard.Keys.Down != e &&
                 Keyboard.Keys.Left != e &&
                 Keyboard.Keys.Right != e)
+                return;
+            if (!Snake.isStart || Snake.isPause)
                 return;
             var last = _lastKeysPress[_lastKeysPress.length - 1];
             if (last == e ||
@@ -627,6 +629,10 @@ var SnakeFoods;
             return rndFood(name);
         for (var i = 0; i < SnakeFoods.foods.length; i++) {
             if (SnakeFoods.foods[i].x == x && SnakeFoods.foods[i].y == y)
+                return rndFood(name);
+        }
+        for (var i = 0; i < Player.tail.length; i++) {
+            if (Player.tail[i].x == x && Player.tail[i].y == y)
                 return rndFood(name);
         }
         SnakeFoods.foods.unshift({ x: x, y: y, name: name, timeout: timeout });

@@ -1,7 +1,7 @@
 enum Direction { Up, Right, Down, Left }
 
 namespace Snake {
-  export let isStart = true;
+  export let isStart = false;
   export let isPause = false;
   export let isLockKeyboard = false;
 
@@ -24,6 +24,7 @@ namespace Snake {
         Keyboard.Keys.Left != e &&
         Keyboard.Keys.Right != e) return;
 
+      if (!isStart || isPause) return;
       let last = _lastKeysPress[_lastKeysPress.length - 1];
       if(last == e || 
         (Keyboard.Keys.Up == e && last == Direction.Down) ||

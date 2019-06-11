@@ -73,6 +73,9 @@ namespace SnakeFoods {
     for (let i = 0; i < foods.length; i++) {
       if (foods[i].x == x && foods[i].y == y) return rndFood(name);
     }
+    for (let i = 0; i < Player.tail.length; i++) {
+      if (Player.tail[i].x == x && Player.tail[i].y == y) return rndFood(name);
+    }
 
     foods.unshift({ x, y, name, timeout });
     return true;
