@@ -130,13 +130,26 @@ h1.h1-title {
     margin: 0 3px;
   }
 }
-.grayinfo {
+.blockinfo {
   font-size: 13px;
   color: #99a6b1;
   word-wrap: break-word;
+  margin-left: 10px;
   margin-top: 10px !important; 
-  flex-direction: column;
+
+  div {
+    flex-direction: column;
+    display: flex;
+  }
+
+  .mobile {
+    display: none;
+    margin: 10px 0;
+    text-align: center;
+  }
 }
+
+
 .eat {
   margin-right: 5px;
   height: 16px;
@@ -185,14 +198,21 @@ h1.h1-title {
     flex-wrap: wrap;
     justify-content: center;
     padding-top: 5px;
+    margin: 0;
 
     > div {
       margin-left: 10px;
     }
   }
 
-  .grayinfo{
+  .blockinfo {
+    margin-left: 0;
+  }
+  .blockinfo .pc {
     display: none !important;
+  }
+  .blockinfo .mobile {
+    display: flex;
   }
 } 
 

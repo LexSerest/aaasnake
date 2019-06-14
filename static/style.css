@@ -197,15 +197,28 @@ h1.h1-title span {
   margin: 0 3px;
 }
 
-.grayinfo {
+.blockinfo {
   font-size: 13px;
   color: #99a6b1;
   word-wrap: break-word;
+  margin-left: 10px;
   margin-top: 10px !important;
+}
+
+.blockinfo div {
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.blockinfo .mobile {
+  display: none;
+  margin: 10px 0;
+  text-align: center;
 }
 
 .eat {
@@ -281,12 +294,21 @@ h1.h1-title span {
         -ms-flex-pack: center;
             justify-content: center;
     padding-top: 5px;
+    margin: 0;
   }
   .legends > div {
     margin-left: 10px;
   }
-  .grayinfo {
+  .blockinfo {
+    margin-left: 0;
+  }
+  .blockinfo .pc {
     display: none !important;
+  }
+  .blockinfo .mobile {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
   }
 }
 
