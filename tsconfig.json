@@ -3,8 +3,7 @@
     "target": "es5",
     "outFile": "static/main.js",
     "sourceMap": true,
-    "removeComments": true,
-    "lib": ["es2016.array.include", "dom", "es5", "es6"]
+    "removeComments": true
   },
   "exclude": [
     "node_modules",

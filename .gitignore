@@ -1,1 +1,7 @@
-.vscode/
+.vscode/settings.json
+node_modules
+package.json
+package-lock.json
+gulpfile.js
+dist/
+forserver.js
