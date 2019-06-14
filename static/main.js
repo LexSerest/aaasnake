@@ -69,7 +69,7 @@ var SnakeFoodsTypes;
         },
         {
             name: 'teleport_elem',
-            color: '#000',
+            color: '#FFF',
             isNotEat: true,
             func: function (info) {
                 SnakeFoods.foods.forEach(function (e) {
@@ -83,6 +83,7 @@ var SnakeFoodsTypes;
                         Player.pos.x = e.x + (Player.direction == Direction.Left ? 1 : -1);
                         Player.pos.y = e.y;
                     }
+                    Snake.collision();
                 });
             }
         },
@@ -300,7 +301,7 @@ var Snake;
             Snake.move();
             if (Snake.isStart)
                 run();
-        }, 300 - Player.speed * 5);
+        }, 300 - Player.speed * 3);
     }
     Snake.run = run;
     function addScore(score) {
@@ -323,8 +324,8 @@ var Snake;
     Snake.pause = pause;
     function draw() {
         Snake.isLockKeyboard = false;
-        Player.draw();
         SnakeFoods.foods.forEach(function (e) { return Canvas.drawBox(e.x, e.y, SnakeFoods.get_color(e.name)); });
+        Player.draw();
     }
     Snake.draw = draw;
     function end() {
@@ -378,12 +379,17 @@ var Snake;
             if (Player.pos.x > Vars.defaultSizeMap - 1)
                 Player.pos.x = 0;
         }
+        collision();
+        if (Snake.isStart)
+            draw();
+    }
+    Snake.move = move;
+    function collision() {
         if (!Player.collision())
             return end();
         SnakeFoods.eat_event(Player.pos, Snake.onEat);
-        draw();
     }
-    Snake.move = move;
+    Snake.collision = collision;
 })(Snake || (Snake = {}));
 var Player;
 (function (Player) {
@@ -408,18 +414,18 @@ var Player;
     }
     Player.set_default = set_default;
     function draw() {
-        Canvas.drawBox(Player.pos.x, Player.pos.y, Player.color_snake_head);
         Player.tail.forEach(function (e) { return Canvas.drawBox(e.x, e.y, Player.color_snake); });
         if (Player.tail.length > Player.size) {
             var last = Player.tail.pop();
             Canvas.drawBox(last.x, last.y, Vars.color_background);
         }
+        Canvas.drawBox(Player.pos.x, Player.pos.y, Player.color_snake_head);
     }
     Player.draw = draw;
     function collision() {
         var is_success = true;
         Player.tail.forEach(function (e, i) {
-            if (i && e.x == Player.pos.x && e.y == Player.pos.y)
+            if (i && i != Player.tail.length - 1 && e.x == Player.pos.x && e.y == Player.pos.y)
                 is_success = false;
         });
         if (Player.isWall) {
@@ -482,11 +488,11 @@ var GUI;
     }
     GUI.updateScore = updateScore;
     function bestShow() {
-        $$('.best span').forEach(function (e) { return e.innerHTML = (localStorage.getItem("best") || 0); });
+        $$('.best span').forEach(function (e) { return e.innerHTML = (+localStorage.getItem("best") || 0); });
     }
     GUI.bestShow = bestShow;
     function updateBest() {
-        if (+localStorage.getItem("best") < Player.score) {
+        if ((+localStorage.getItem("best") || 0) < Player.score) {
             localStorage.setItem("best", Player.score.toString());
             $$('.best span').forEach(function (e) { return e.innerHTML = Player.score; });
         }

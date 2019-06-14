@@ -58,7 +58,7 @@ namespace Snake {
       if(e) changeDirection(e);
       Snake.move();
       if (isStart) run();
-    }, 300 - Player.speed * 5)
+    }, 300 - Player.speed * 3)
   }
 
   export function addScore(score) {
@@ -81,8 +81,8 @@ namespace Snake {
 
   export function draw() {
     isLockKeyboard = false;
-    Player.draw()
     SnakeFoods.foods.forEach(e => Canvas.drawBox(e.x, e.y, SnakeFoods.get_color(e.name)))
+    Player.draw()
   }
 
   export function end() {
@@ -126,9 +126,13 @@ namespace Snake {
       if (Player.pos.y > Vars.defaultSizeMap - 1) Player.pos.y = 0;
       if (Player.pos.x > Vars.defaultSizeMap - 1) Player.pos.x = 0;
     }
+    collision();
+    if(isStart) draw();
+  }
+
+  export function collision(){
     if(!Player.collision()) return end();
     SnakeFoods.eat_event(Player.pos, onEat);
-    draw();
   }
 
 }

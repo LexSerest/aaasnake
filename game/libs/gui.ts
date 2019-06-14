@@ -50,11 +50,11 @@ namespace GUI {
   }
 
   export function bestShow(){
-    $$('.best span').forEach(e => e.innerHTML = (localStorage.getItem("best") || 0));
+    $$('.best span').forEach(e => e.innerHTML = (+localStorage.getItem("best") || 0));
   }
 
   export function updateBest(){
-    if(+localStorage.getItem("best") < Player.score){
+    if((+localStorage.getItem("best") || 0) < Player.score){
       localStorage.setItem("best", Player.score.toString());
       $$('.best span').forEach(e => e.innerHTML = Player.score)
     }

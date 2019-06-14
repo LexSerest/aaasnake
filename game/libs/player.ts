@@ -1,6 +1,6 @@
 namespace Player {
   export let size = 4;
-  export let pos: Pos = {x: 1, y: 3};
+  export let pos: Pos = { x: 1, y: 3 };
   export let tail: Pos[] = [];
   export let speed: number = 0;
   export let direction: Direction = Direction.Down;
@@ -11,28 +11,28 @@ namespace Player {
 
   export function set_default() {
     size = 3;
-    pos = {x: 1, y: 3};
+    pos = { x: 1, y: 3 };
     tail = [];
     speed = 0;
     direction = Direction.Down;
     isWall = true;
     score = 0;
     color_snake = Vars.color_snake;
-  } 
+  }
 
-  export function draw(){
-    Canvas.drawBox(pos.x, pos.y, color_snake_head);
+  export function draw() {
     Player.tail.forEach(e => Canvas.drawBox(e.x, e.y, color_snake))
-    if(tail.length > size) {
+    if (tail.length > size) {
       let last = tail.pop();
       Canvas.drawBox(last.x, last.y, Vars.color_background)
     }
+    Canvas.drawBox(pos.x, pos.y, color_snake_head);
   }
 
   export function collision() {
     let is_success = true;
     Player.tail.forEach((e, i) => {
-      if (i && e.x == Player.pos.x && e.y == Player.pos.y) is_success = false;
+      if (i && i != Player.tail.length - 1 && e.x == Player.pos.x && e.y == Player.pos.y) is_success = false;
     })
 
     if (Player.isWall) {

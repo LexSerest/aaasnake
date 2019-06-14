@@ -28,7 +28,7 @@ namespace SnakeFoodsTypes {
     },
     {
       name: 'teleport_elem',
-      color: '#000',
+      color: '#FFF',
       isNotEat: true,
       func: (info) => {
         SnakeFoods.foods.forEach(e => {
@@ -41,6 +41,7 @@ namespace SnakeFoodsTypes {
             Player.pos.x = e.x + (Player.direction == Direction.Left ? 1 : -1);
             Player.pos.y = e.y;
           }
+          Snake.collision();
         })
       }
     },
