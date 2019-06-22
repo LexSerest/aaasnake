@@ -36,8 +36,24 @@ function start(){
   Snake.start();
 }
 
-function unpause(){
-  Snake.isPause &&  Snake.pause()
+function unpause(){ Snake.isPause && Snake.pause() }
+function pauseToggle(){ Snake.pause() }
+function setting(){ GUI.window_open('setting'); }
+function main(){ GUI.window_open('start'); }
+
+function swipeToggle(){ GUI.swipeToggle(); }
+function button_up(){ Snake.keyboardEvent(Keyboard.Keys.Up) }
+function button_left(){ Snake.keyboardEvent(Keyboard.Keys.Right) }
+function button_down(){ Snake.keyboardEvent(Keyboard.Keys.Down) }
+function button_right(){ Snake.keyboardEvent(Keyboard.Keys.Left) }
+function toggleDrawMode(){ 
+  let mode = +localStorage.getItem('useFullDraw') || 0;
+  localStorage.setItem('useFullDraw', (+(!mode)).toString() )
+  Snake.useFullDraw = !!mode;
+
+  $('#drawmode span').innerHTML = !mode ? '1' : '0';
 }
 
+
+GUI.swipeToggle(+localStorage.getItem('swipemode') || 0)
 Snake.init('#snake');

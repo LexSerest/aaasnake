@@ -1,11 +1,14 @@
 namespace Swipe {
-  enum Direction { Up = 38, Right = 37, Left = 39, Down = 40 }
+  enum Direction { Up = 38, Right = 37, Left = 39, Down = 40, Space = 32 }
+  export let swipeEnabled = true;
 
   export function swipebind(element, f) {
     let xDown = null;
     let yDown = null;
 
+    // swipe
     element.addEventListener('touchstart', evt => {
+      if(!swipeEnabled) return;
       xDown = evt.touches[0].clientX;
       yDown = evt.touches[0].clientY;
     }, false);
@@ -23,12 +26,34 @@ namespace Swipe {
       } else {
         f(yDiff > 0 ? Direction.Up : Direction.Down)
       }
+
+      evt.preventDefault()
       
       xDown = null;
       yDown = null;
     }, false);
   }
+
+  export function doubletap(element, f){
+
+    var lastTap = 0;
+    var firstTap = 0;
+    // doubletap
+
+    element.addEventListener('touchend', function(event) {
+      var currentTime = new Date().getTime();
+      var tapLength = currentTime - lastTap;
+      if (tapLength < 300 && tapLength > 0) {
+        event.preventDefault()
+        f(Direction.Space);
+      }
+      lastTap = currentTime;
+    });
+    
+  }
 }
+
+
 
 namespace Keyboard {
   export enum Keys {
@@ -43,5 +68,6 @@ namespace Keyboard {
   export function bind_keydown(selector: HTMLElement, f: Function){
     selector.addEventListener('keydown', e => f(e.keyCode))
     Swipe.swipebind(selector, e => f(e))
+    Swipe.doubletap($('canvas'), e=> f(e))
   }  
 }

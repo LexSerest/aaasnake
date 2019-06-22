@@ -59,4 +59,15 @@ namespace GUI {
       $$('.best span').forEach(e => e.innerHTML = Player.score)
     }
   }
+
+  export function swipeToggle(setState = undefined){
+    let isset = typeof setState == 'undefined';
+    if(isset){
+      setState = $('#mobile').getAttribute('data-type') == 'swipe';
+    }
+
+    Swipe.swipeEnabled = !setState;
+    if(isset) localStorage.setItem('swipemode', (+setState).toString()) 
+    $('#mobile').setAttribute('data-type', setState ? 'buttons' : 'swipe');
+  }
 }

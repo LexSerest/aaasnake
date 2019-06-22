@@ -7,6 +7,10 @@ namespace SnakeFoods {
     return Vars.colors_food.splice(i, 1)[0];
   }
 
+  export function draw(){
+    foods.forEach(e => Canvas.drawBox(e.x, e.y, get_color(e.name)))
+  }
+
   export function clear() {
     foods = [];
   }
@@ -15,41 +19,55 @@ namespace SnakeFoods {
     foods.forEach(e => food_init(e))
   }
 
-  export function food_init(food: FoodType, isRnd = false) {
+  export function food_init(food: FoodType) {
     food = Object.copy(food);
     if(!food.color) food.color = rndColor();
     if(!food.repeatability) food.repeatability = 1;
     foods_type[food.name] = food;
-    if (isRnd) rndFood(food.name)
   }
 
-  export function eat_event(pos: Pos, onfood) {
+  function tick(food: Food){
+    const type_food: FoodType = foods_type[food.name];
+
+    if (food.timeout > 0) food.timeout--;
+    if (food.timeout == 0) {
+      remove_food_type(food);
+      if (type_food.remove_func) type_food.remove_func();
+      Canvas.drawBox(food.x, food.y, Vars.color_background)
+    }
+
+  }
+
+  export function eat_event() {
+    let pos = Player.pos;
     foods.forEach((e, i) => {
       const type_food: FoodType = foods_type[e.name];
 
-      if (e.x == pos.x && e.y == pos.y) {
-        if(!type_food.isNotEat) foods.splice(i, 1);
+      if (e.x == pos.x && e.y == pos.y)  {
+        if(!type_food.isNotEat) remove_food_type(e)
         if(type_food.isOne) disable_food(e.name);
         if(type_food.func) type_food.func(e);
         if(type_food.disable_time) {
           clearTimeout(type_food._timer)
           type_food._timer = setTimeout(() => type_food.disabled(), type_food.disable_time * 1000);
         }
-        if (onfood) onfood(type_food)
+        if (Snake.onEat) Snake.onEat(type_food)
       }
-      if (e.timeout > 0) e.timeout--;
-      if (e.timeout == 0) {
-        foods.splice(i, 1);
-        if (type_food.remove_func) type_food.remove_func();
-        Canvas.drawBox(e.x, e.y, Vars.color_background)
-      }
+
+      tick(e);
     })
   }
 
   export function remove_food(name){
     foods = foods.filter(e => e.name !== name);
     Canvas.first()
-    Snake.draw()
+    Snake.snake()
+  }
+
+  export function remove_food_type(food: Food){
+    foods = foods.filter(e => e.x != food.x || e.y != food.y);
+    Canvas.first()
+    Snake.snake()
   }
 
   export function disable_food(name){
@@ -60,32 +78,39 @@ namespace SnakeFoods {
     foods_type[name].isDisable = false;
   }
 
-  export function rndFood(name: string) {
-    if(!foods_type[name] || foods_type[name].isDisable) return;
-    let repeatability = foods_type[name].repeatability;
-    let timeout = foods_type[name].timeout || -1;
-    if (repeatability != 1 && Math.random() > repeatability) return;
-
+  export function rndPos(): Pos{
     let x = Math.random() * Vars.defaultSizeMap >> 0;
     let y = Math.random() * Vars.defaultSizeMap >> 0;
-
-    if(Player.pos.x == x && Player.pos.y == y) return rndFood(name);
+  
+    if(Player.pos.x == x && Player.pos.y == y) return rndPos();
     for (let i = 0; i < foods.length; i++) {
-      if (foods[i].x == x && foods[i].y == y) return rndFood(name);
+      if (foods[i].x == x && foods[i].y == y) return rndPos();
     }
     for (let i = 0; i < Player.tail.length; i++) {
-      if (Player.tail[i].x == x && Player.tail[i].y == y) return rndFood(name);
+      if (Player.tail[i].x == x && Player.tail[i].y == y) return rndPos();
     }
 
-    foods.unshift({ x, y, name, timeout });
+    return {x, y};
+  }
+
+  export function addFood(name: string, pos: Pos = null){
+    let food = foods_type[name];
+    if(!food || food.isDisable) return;
+    let repeatability = food.repeatability;
+    let timeout = food.timeout || -1;
+    if (repeatability != 1 && Math.random() > repeatability) return;
+
+    pos = pos || rndPos();
+    foods.unshift({ x: pos.x, y: pos.y, name, timeout });
     return true;
   }
 
   export function rndFoods() {
-    Object.keys(foods_type).forEach(e => rndFood(e))
+    Object.keys(foods_type).forEach(e => addFood(e))
   }
 
   export function get_color(name: string) {
     return foods_type[name].color;
   }
 }
+

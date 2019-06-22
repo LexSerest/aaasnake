@@ -5,7 +5,7 @@ interface Pos {
 
 interface FoodType {
   isDisable?: boolean;
-  _timer?: number;
+  _timer?: any;
   isNotEat?: boolean;
   func?: Function;
   color?: string;
@@ -14,8 +14,8 @@ interface FoodType {
   timeout?: number;
   remove_func?: Function;
   isOne?: boolean;
-  disabled?: Function,
-  disable_time?: number
+  disabled?: Function;
+  disable_time?: number;
 }
 
 interface Food {

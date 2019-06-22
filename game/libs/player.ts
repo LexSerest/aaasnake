@@ -17,16 +17,20 @@ namespace Player {
     direction = Direction.Down;
     isWall = true;
     score = 0;
-    color_snake = Vars.color_snake;
+  }
+
+  export function inc(){
+    speed++;
+    size++;
   }
 
   export function draw() {
-    Player.tail.forEach(e => Canvas.drawBox(e.x, e.y, color_snake))
+    Player.tail.forEach(e => Canvas.drawBox(e.x, e.y, Vars.color_snake))
     if (tail.length > size) {
-      let last = tail.pop();
-      Canvas.drawBox(last.x, last.y, Vars.color_background)
+      let {x, y} = tail.pop();
+      Canvas.drawBox(x, y, Vars.color_background)
     }
-    Canvas.drawBox(pos.x, pos.y, color_snake_head);
+    Canvas.drawBox(pos.x, pos.y, Vars.color_snake_head);
   }
 
   export function collision() {
@@ -45,5 +49,11 @@ namespace Player {
     }
 
     return is_success;
+  }
+
+  export function addScore(score=0) {
+    if(!score) score = (Player.size + Player.speed) / 2 >> 0;
+    Player.score += score;
+    GUI.updateScore();
   }
 }

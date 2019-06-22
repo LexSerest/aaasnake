@@ -2,10 +2,18 @@
   font-family: "Pixel";
   src: url("/static/pixel.otf") format("opentype");
 }
+
+html {
+  height: 100%;
+}
 body {
   background: #687784;
   font-family: "Pixel";
   overscroll-behavior: contain;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  margin: 0;
 }
 main {
   display: flex;
@@ -22,17 +30,48 @@ h1.h1-title {
     color: #ff3535;
   }
 }
+.button-mini {
+  padding: 3px;
+  background: #ffdd35;
+  box-shadow: 2px 2px #84691e;
+  cursor: pointer;
+  min-width: 110px;
+  text-align: center;
+  font-size: 13px;
+  border-radius: 2px;
+  user-select: none;
+
+  &:hover {
+    background: #ffe565;
+  }
+}
+.button-setting {
+  padding: 6px 10px;
+  background: #ffdd35;
+  box-shadow: 2px 2px #84691e;
+  cursor: pointer;
+  min-width: 120px;
+  text-align: center;
+  font-size: 16px;
+  border-radius: 2px;
+  user-select: none;
+
+  &:hover {
+    background: #ffe565;
+  }
+}
 
 .buttons {
     display: flex;
     justify-content: center;
 }
 .button {
+  user-select: none;
   padding: 7px 15px;
   background: #ffdd35;
   box-shadow: 4px 4px #84691e;
   cursor: pointer;
-  width: 110px;
+  min-width: 110px;
   text-align: center;
   font-size: 22px;
   border-radius: 2px;
@@ -96,6 +135,12 @@ h1.h1-title {
       display: flex;
     }
 
+    
+    &[data-show="setting"] {
+      #window-setting { display: flex}
+      display: flex;
+    }
+
     &[data-show="endgame"] {
       #window-endgame { display: flex}
       display: flex;
@@ -112,7 +157,7 @@ h1.h1-title {
 
   padding-top: 25px;
   > div { 
-    margin: 0 0 5px; 
+    margin: 0 0 3px; 
     display: flex;
     font-size: 13px;
   }
@@ -185,11 +230,45 @@ h1.h1-title {
   display: flex;
 }
 
+
+@media only screen and (max-height: 600px){
+  .move-buttons {
+    bottom: 25px !important;
+  }
+  footer {
+    display: none;
+  }
+  .legends {
+    > div {
+      font-size: 12px;
+      margin-bottom: -2px !important;
+    }
+
+    .eat {
+      height: 13px;
+      width: 13px;
+    }
+  }
+}
+
+.button-setting-open {
+  display: none;
+}
+
 @media only screen and (max-width: 500px){
+  .button-setting-open {
+    display: block;
+  }
   .block-column {
     flex-direction: column;
     width: min-content;
     justify-content: center;
+  }
+  footer {
+    margin-bottom: 5px !important;
+  }
+  .timers {
+    margin-bottom: 3px;
   }
 
   .legends {
@@ -201,7 +280,7 @@ h1.h1-title {
     margin: 0;
 
     > div {
-      margin-left: 10px;
+      margin: 0 0 0 5px;
     }
   }
 
@@ -244,5 +323,99 @@ footer {
   }
   to {
     width: 100%;
+  }
+}
+
+
+$arrow-size: 7px;
+$arrow-color: #000;
+
+.move {
+  position: absolute;
+  width: 50px;
+  min-width: 50px;
+  height: 50px;
+
+  &::after{
+    width: 0;
+    height: 0;
+    content: ' ';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    margin: auto;
+  }
+}
+.mobile { 
+  &[data-type="swipe"] {
+    > span { display: block; }
+    > div { display: none; }
+  }
+  &[data-type="buttons"] {
+    > div { display: flex; }
+    > span { display: none; }
+  }
+
+}
+.pause-toogle {
+  width: 50px;
+  min-width: 50px;
+}
+.move-buttons {
+  width: 190px;
+  height: 125px;
+  /* display: flex; */
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+  bottom: 60px;
+}
+
+div#move_left {
+  left: 0;
+  &::after {
+    border-top: $arrow-size solid transparent;
+    border-bottom: $arrow-size solid transparent; 
+    border-right:$arrow-size solid $arrow-color; 
+  }
+}
+
+div#move_right {
+  right: 0;
+  &::after {
+    border-top: $arrow-size  solid transparent;
+    border-bottom: $arrow-size solid transparent;
+    border-left: $arrow-size solid $arrow-color;
+  }
+}
+
+div#move_up {
+  top: 0;
+  &::after {
+    border-left: $arrow-size solid transparent;
+    border-right: $arrow-size solid transparent;
+    border-bottom: $arrow-size solid $arrow-color;
+  }
+}
+
+div#move_down {
+  bottom: 0;
+  &::after {
+    border-left: $arrow-size solid transparent;
+    border-right: $arrow-size solid transparent;
+    
+    border-top: $arrow-size solid $arrow-color;
+  }
+}
+
+#windows-setting {
+
+  .button-mini {
+    padding: 6px 13px;
   }
 }

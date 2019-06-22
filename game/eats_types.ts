@@ -1,63 +1,31 @@
 /// <reference path="vars.ts"/>
 
 namespace SnakeFoodsTypes {
-  export let foods = [
+  export let foods: FoodType[] = [
     {
       name: 'eat',
       color: Vars.color_food,
       repeatability: 1,
       func: () => {
-        Player.size++;
-        Player.speed++;
-        Snake.addScore((Player.size + Player.speed) / 2 >> 0)
+        Player.inc();
+        Player.addScore();
+        SnakeFoods.addFood('eat');
+        setTimeout(e => SnakeFoods.addFood('feces', Player.pos), 100)
 
-        SnakeFoods.rndFood('eat');
-        SnakeFoods.rndFood('wall')
+        SnakeFoods.addFood('border_off')
+        SnakeFoods.addFood('speed_reduce')
+        SnakeFoods.addFood('size_reduce')
+        SnakeFoods.addFood('speed_add')
+        SnakeFoods.addFood('size_add')
+        SnakeFoods.addFood('speed_reduce')
+        SnakeFoods.addFood('bonus_x2')
+        SnakeFoods.addFood('bonus_1000')
+        SnakeFoods.addFood('manyfood')
+        SnakeFoods.addFood('clearwall')
+        SnakeFoods.addFood('hell')
+        SnakeFoods.addFood('exithell')
 
-        SnakeFoods.rndFood('border_off')
-        SnakeFoods.rndFood('teleport')
-        SnakeFoods.rndFood('speed_reduce')
-        SnakeFoods.rndFood('size_reduce')
-        SnakeFoods.rndFood('speed_add')
-        SnakeFoods.rndFood('size_add')
-        SnakeFoods.rndFood('speed_reduce')
-        SnakeFoods.rndFood('bonus')
-        SnakeFoods.rndFood('manyfood')
-        SnakeFoods.rndFood('clearwall')
-      }
-    },
-    {
-      name: 'teleport_elem',
-      color: '#FFF',
-      isNotEat: true,
-      func: (info) => {
-        SnakeFoods.foods.forEach(e => {
-          if ((e.x == info.x && e.y == info.y) || e.name != 'teleport_elem') return;
-          if (Player.direction == Direction.Down || Player.direction == Direction.Up) {
-            Player.pos.y = e.y + (Player.direction == Direction.Down ? 1 : -1);
-            Player.pos.x = e.x;
-          }
-          if (Player.direction == Direction.Left || Player.direction == Direction.Right) {
-            Player.pos.x = e.x + (Player.direction == Direction.Left ? 1 : -1);
-            Player.pos.y = e.y;
-          }
-          Snake.collision();
-        })
-      }
-    },
-    {
-      name: 'teleport',
-      repeatability: 0.05,
-      timeout: 30,
-      disable_time: 60,
-      disabled: () => {
-        SnakeFoods.remove_food('teleport_elem')
-        SnakeFoods.enable_food('teleport');
-      },
-      func: () => {
-        SnakeFoods.rndFood('teleport_elem');
-        SnakeFoods.rndFood('teleport_elem');
-        SnakeFoods.disable_food('teleport');
+        Snake.snake();
       }
     },
     {
@@ -65,9 +33,8 @@ namespace SnakeFoodsTypes {
       color: Vars.color_food,
       repeatability: .8,
       func: () => {
-        Player.size++;
-        Player.speed++;
-        Snake.addScore((Player.size + Player.speed) / 2 >> 0)
+        Player.inc();
+        Player.addScore();
       }
     },
     {
@@ -77,14 +44,14 @@ namespace SnakeFoodsTypes {
       disable_time: 15,
       disabled: () => SnakeFoods.remove_food('simple_food'),
       func: () => {
-        for (let i = 0; i < 10; i++) SnakeFoods.rndFood('simple_food');
+        for (let i = 0; i < 10; i++) SnakeFoods.addFood('simple_food');
       }
     },
     {
       name: 'clearwall',
       repeatability: 0.05,
       timeout: 30,
-      func: () => SnakeFoods.remove_food('wall')
+      func: () => SnakeFoods.remove_food('feces')
     },
     {
       name: 'border_off',
@@ -95,13 +62,13 @@ namespace SnakeFoodsTypes {
         Player.isWall = true;
         Vars.color_border = DefaultVars.color_border;
         Canvas.first()
-        Snake.draw()
+        Snake.snake()
       },
       func: () => {
         Player.isWall = false;
         Vars.color_border = '#C0C5CE';
         Canvas.first()
-        Snake.draw()
+        Snake.snake()
       }
     },
     {
@@ -139,45 +106,70 @@ namespace SnakeFoodsTypes {
       }
     },
     {
-      name: 'bonus',
+      name: 'bonus_x2',
       repeatability: 0.05,
       timeout: 30,
       func: () => {
-        Snake.addScore(Player.score);
+        Player.addScore(Player.score);
       }
     },
     {
-      name: 'wall',
+      name: 'bonus_1000',
+      repeatability: 0.05,
+      timeout: 30,
+      func: () => {
+        Player.addScore(1000);
+      }
+    },
+    {
+      name: 'feces',
       color: Vars.color_border,
       repeatability: 0.6,
       func: () => Snake.end()
+    },
+    {
+      name: 'hell',
+      repeatability: 0.05,
+      timeout: 30,
+      isOne: true,
+      func: () => {
+        Vars.set_default();
+        SnakeFoods.foods_init(SnakeFoodsTypes.foods);
+        GUI.clearTimer();
+        setTimeout(e => GUI.legengReset(), 100);
+        setTimeout(e => GUI.clearTimer(), 100);
+        setTimeout(e => SnakeFoods.foods_type['hell'].isDisable = true, 100);
+        setTimeout(e => SnakeFoods.foods_type['exithell'].isDisable = false, 100);
+        Player.isWall = true;
+
+        Vars.color_border = '#463434';
+        Vars.color_background = '#baa7a7';
+        Vars.color_snake = '#664f4f';
+        Vars.color_snake_head = '#5a4747';
+        SnakeFoods.foods_type['feces'].repeatability = 1;
+        Canvas.first();  
+
+        SnakeFoods.clear();
+        SnakeFoods.addFood('eat');
+        Snake.snake();
+      }
+    },
+    {
+      name: 'exithell',
+      repeatability: 0.05,
+      timeout: 30,
+      isOne: true,
+      isDisable: true,
+      func: () => {
+        Vars.set_default();
+        setTimeout(e => GUI.clearTimer(), 100);
+        setTimeout(e => SnakeFoods.foods_type['hell'].isDisable = false, 100);
+        setTimeout(e => SnakeFoods.foods_type['exithell'].isDisable = true, 100);
+        Player.isWall = true;
+        SnakeFoods.foods_type['feces'].repeatability = 0.6
+        Canvas.first();  
+        Snake.snake();
+      }
     }
   ]
 }
-/* 
-{
-  name: 'border_off_alltime',
-  repeatability: 0.03,
-  isDisable: true,
-  timeout: 30,
-  isOne: true,
-  func: () => {
-    Player.isWall = false;
-    Vars.color_border = '#C0C5CE';
-    Canvas.first()
-    SnakeFoods.disable_food('border_off')
-  }
-},
-{
-  name: 'resize_map',
-  repeatability: 0.03,
-  timeout: 30,
-  isOne: true,
-  isDisable: true,
-  func: () => {
-    Vars.defaultSizeMap = 25;
-    Vars.blockSize = 12;
-    Canvas.first();
-    Snake.draw();
-  }
-}, */

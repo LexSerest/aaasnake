@@ -22,7 +22,8 @@ var DefaultVars;
     DefaultVars.color_food = '#28b528';
     DefaultVars.colors_food = [
         '#b52828', '#b5289d', '#5828b5', '#288eb5', '#28b594', '#b5b128',
-        '#ea9a9a', '#ea9ae4', '#337341', '#9aeaab', '#c4ea9a', '#ead59a'
+        '#ea9a9a', '#ea9ae4', '#337341', '#9aeaab', '#c4ea9a', '#ead59a',
+        '#FFFFFF', '#0e0086', '#860038'
     ];
 })(DefaultVars || (DefaultVars = {}));
 var Vars;
@@ -50,56 +51,23 @@ var SnakeFoodsTypes;
             color: Vars.color_food,
             repeatability: 1,
             func: function () {
-                Player.size++;
-                Player.speed++;
-                Snake.addScore((Player.size + Player.speed) / 2 >> 0);
-                SnakeFoods.rndFood('eat');
-                SnakeFoods.rndFood('wall');
-                SnakeFoods.rndFood('border_off');
-                SnakeFoods.rndFood('teleport');
-                SnakeFoods.rndFood('speed_reduce');
-                SnakeFoods.rndFood('size_reduce');
-                SnakeFoods.rndFood('speed_add');
-                SnakeFoods.rndFood('size_add');
-                SnakeFoods.rndFood('speed_reduce');
-                SnakeFoods.rndFood('bonus');
-                SnakeFoods.rndFood('manyfood');
-                SnakeFoods.rndFood('clearwall');
-            }
-        },
-        {
-            name: 'teleport_elem',
-            color: '#FFF',
-            isNotEat: true,
-            func: function (info) {
-                SnakeFoods.foods.forEach(function (e) {
-                    if ((e.x == info.x && e.y == info.y) || e.name != 'teleport_elem')
-                        return;
-                    if (Player.direction == Direction.Down || Player.direction == Direction.Up) {
-                        Player.pos.y = e.y + (Player.direction == Direction.Down ? 1 : -1);
-                        Player.pos.x = e.x;
-                    }
-                    if (Player.direction == Direction.Left || Player.direction == Direction.Right) {
-                        Player.pos.x = e.x + (Player.direction == Direction.Left ? 1 : -1);
-                        Player.pos.y = e.y;
-                    }
-                    Snake.collision();
-                });
-            }
-        },
-        {
-            name: 'teleport',
-            repeatability: 0.05,
-            timeout: 30,
-            disable_time: 60,
-            disabled: function () {
-                SnakeFoods.remove_food('teleport_elem');
-                SnakeFoods.enable_food('teleport');
-            },
-            func: function () {
-                SnakeFoods.rndFood('teleport_elem');
-                SnakeFoods.rndFood('teleport_elem');
-                SnakeFoods.disable_food('teleport');
+                Player.inc();
+                Player.addScore();
+                SnakeFoods.addFood('eat');
+                setTimeout(function (e) { return SnakeFoods.addFood('feces', Player.pos); }, 100);
+                SnakeFoods.addFood('border_off');
+                SnakeFoods.addFood('speed_reduce');
+                SnakeFoods.addFood('size_reduce');
+                SnakeFoods.addFood('speed_add');
+                SnakeFoods.addFood('size_add');
+                SnakeFoods.addFood('speed_reduce');
+                SnakeFoods.addFood('bonus_x2');
+                SnakeFoods.addFood('bonus_1000');
+                SnakeFoods.addFood('manyfood');
+                SnakeFoods.addFood('clearwall');
+                SnakeFoods.addFood('hell');
+                SnakeFoods.addFood('exithell');
+                Snake.snake();
             }
         },
         {
@@ -107,9 +75,8 @@ var SnakeFoodsTypes;
             color: Vars.color_food,
             repeatability: .8,
             func: function () {
-                Player.size++;
-                Player.speed++;
-                Snake.addScore((Player.size + Player.speed) / 2 >> 0);
+                Player.inc();
+                Player.addScore();
             }
         },
         {
@@ -120,14 +87,14 @@ var SnakeFoodsTypes;
             disabled: function () { return SnakeFoods.remove_food('simple_food'); },
             func: function () {
                 for (var i = 0; i < 10; i++)
-                    SnakeFoods.rndFood('simple_food');
+                    SnakeFoods.addFood('simple_food');
             }
         },
         {
             name: 'clearwall',
             repeatability: 0.05,
             timeout: 30,
-            func: function () { return SnakeFoods.remove_food('wall'); }
+            func: function () { return SnakeFoods.remove_food('feces'); }
         },
         {
             name: 'border_off',
@@ -138,13 +105,13 @@ var SnakeFoodsTypes;
                 Player.isWall = true;
                 Vars.color_border = DefaultVars.color_border;
                 Canvas.first();
-                Snake.draw();
+                Snake.snake();
             },
             func: function () {
                 Player.isWall = false;
                 Vars.color_border = '#C0C5CE';
                 Canvas.first();
-                Snake.draw();
+                Snake.snake();
             }
         },
         {
@@ -184,18 +151,68 @@ var SnakeFoodsTypes;
             }
         },
         {
-            name: 'bonus',
+            name: 'bonus_x2',
             repeatability: 0.05,
             timeout: 30,
             func: function () {
-                Snake.addScore(Player.score);
+                Player.addScore(Player.score);
             }
         },
         {
-            name: 'wall',
+            name: 'bonus_1000',
+            repeatability: 0.05,
+            timeout: 30,
+            func: function () {
+                Player.addScore(1000);
+            }
+        },
+        {
+            name: 'feces',
             color: Vars.color_border,
             repeatability: 0.6,
             func: function () { return Snake.end(); }
+        },
+        {
+            name: 'hell',
+            repeatability: 0.05,
+            timeout: 30,
+            isOne: true,
+            func: function () {
+                Vars.set_default();
+                SnakeFoods.foods_init(SnakeFoodsTypes.foods);
+                GUI.clearTimer();
+                setTimeout(function (e) { return GUI.legengReset(); }, 100);
+                setTimeout(function (e) { return GUI.clearTimer(); }, 100);
+                setTimeout(function (e) { return SnakeFoods.foods_type['hell'].isDisable = true; }, 100);
+                setTimeout(function (e) { return SnakeFoods.foods_type['exithell'].isDisable = false; }, 100);
+                Player.isWall = true;
+                Vars.color_border = '#463434';
+                Vars.color_background = '#baa7a7';
+                Vars.color_snake = '#664f4f';
+                Vars.color_snake_head = '#5a4747';
+                SnakeFoods.foods_type['feces'].repeatability = 1;
+                Canvas.first();
+                SnakeFoods.clear();
+                SnakeFoods.addFood('eat');
+                Snake.snake();
+            }
+        },
+        {
+            name: 'exithell',
+            repeatability: 0.05,
+            timeout: 30,
+            isOne: true,
+            isDisable: true,
+            func: function () {
+                Vars.set_default();
+                setTimeout(function (e) { return GUI.clearTimer(); }, 100);
+                setTimeout(function (e) { return SnakeFoods.foods_type['hell'].isDisable = false; }, 100);
+                setTimeout(function (e) { return SnakeFoods.foods_type['exithell'].isDisable = true; }, 100);
+                Player.isWall = true;
+                SnakeFoods.foods_type['feces'].repeatability = 0.6;
+                Canvas.first();
+                Snake.snake();
+            }
         }
     ];
 })(SnakeFoodsTypes || (SnakeFoodsTypes = {}));
@@ -254,40 +271,53 @@ var Snake;
     Snake.onEnd = null;
     Snake.onEat = null;
     Snake.onPause = null;
+    Snake.useFullDraw = true;
     var _timer = null;
     var _lastKeysPress = [];
-    function init(canvas_selector) {
-        Canvas.init(canvas_selector);
-        GUI.bestShow();
-        Keyboard.bind_keydown($('body'), function (e) {
-            if (Keyboard.Keys.Return == e)
-                start();
-            if (Keyboard.Keys.Space == e)
-                pause();
-            if (Keyboard.Keys.Up != e &&
-                Keyboard.Keys.Down != e &&
-                Keyboard.Keys.Left != e &&
-                Keyboard.Keys.Right != e)
-                return;
-            if (!Snake.isStart || Snake.isPause)
-                return;
-            var last = _lastKeysPress[_lastKeysPress.length - 1];
-            if (last == e ||
-                (Keyboard.Keys.Up == e && last == Direction.Down) ||
-                (Keyboard.Keys.Down == e && last == Direction.Up) ||
-                (Keyboard.Keys.Left == e && last == Direction.Right) ||
-                (Keyboard.Keys.Right == e && last == Direction.Left))
-                return;
-            _lastKeysPress.splice(3);
-            _lastKeysPress.push(e);
-        });
-    }
-    Snake.init = init;
-    function changeDirection(e) {
+    function testDirection(e) {
         if ((Keyboard.Keys.Up == e && Player.direction == Direction.Down) ||
             (Keyboard.Keys.Down == e && Player.direction == Direction.Up) ||
             (Keyboard.Keys.Left == e && Player.direction == Direction.Right) ||
             (Keyboard.Keys.Right == e && Player.direction == Direction.Left))
+            return true;
+    }
+    function changeDrawVariant(usefull) {
+        if (usefull === void 0) { usefull = false; }
+        Snake.useFullDraw = usefull;
+        localStorage.setItem('useFullDraw', (+usefull).toString());
+    }
+    Snake.changeDrawVariant = changeDrawVariant;
+    function keyboardEvent(e) {
+        if (Keyboard.Keys.Return == e)
+            start();
+        if (Keyboard.Keys.Space == e)
+            pause();
+        if (Keyboard.Keys.Up != e &&
+            Keyboard.Keys.Down != e &&
+            Keyboard.Keys.Left != e &&
+            Keyboard.Keys.Right != e)
+            return;
+        if (!Snake.isStart || Snake.isPause)
+            return;
+        var last = _lastKeysPress[_lastKeysPress.length - 1];
+        if (last == e ||
+            (Keyboard.Keys.Up == e && last == Direction.Down) ||
+            (Keyboard.Keys.Down == e && last == Direction.Up) ||
+            (Keyboard.Keys.Left == e && last == Direction.Right) ||
+            (Keyboard.Keys.Right == e && last == Direction.Left))
+            return;
+        _lastKeysPress.splice(3);
+        _lastKeysPress.push(e);
+    }
+    Snake.keyboardEvent = keyboardEvent;
+    function init(canvas_selector) {
+        Canvas.init(canvas_selector);
+        GUI.bestShow();
+        Keyboard.bind_keydown($('body'), function (e) { return keyboardEvent(e); });
+    }
+    Snake.init = init;
+    function changeDirection(e) {
+        if (testDirection(e))
             return;
         Player.direction = Direction[Keyboard.Keys[e]];
     }
@@ -304,11 +334,6 @@ var Snake;
         }, 300 - Player.speed * 3);
     }
     Snake.run = run;
-    function addScore(score) {
-        Player.score += score;
-        GUI.updateScore();
-    }
-    Snake.addScore = addScore;
     function pause() {
         if (!Snake.isStart)
             return;
@@ -322,12 +347,18 @@ var Snake;
             Snake.onPause(Snake.isPause, Snake.isStart);
     }
     Snake.pause = pause;
-    function draw() {
-        Snake.isLockKeyboard = false;
-        SnakeFoods.foods.forEach(function (e) { return Canvas.drawBox(e.x, e.y, SnakeFoods.get_color(e.name)); });
-        Player.draw();
+    function snake() {
+        SnakeFoods.eat_event();
+        if (!Snake.isStart || !Player.collision())
+            return end();
+        if (Snake.isStart && Snake.useFullDraw && Player.collision())
+            Canvas.first();
+        if (Snake.isStart) {
+            Player.draw();
+            SnakeFoods.draw();
+        }
     }
-    Snake.draw = draw;
+    Snake.snake = snake;
     function end() {
         Snake.isStart = false;
         if (Snake.onEnd)
@@ -346,7 +377,7 @@ var Snake;
         Canvas.first();
         Snake.isStart = true;
         SnakeFoods.clear();
-        SnakeFoods.rndFood('eat');
+        SnakeFoods.addFood('eat');
         run();
         GUI.window_open('hide');
         if (Snake.onStart)
@@ -354,6 +385,8 @@ var Snake;
     }
     Snake.start = start;
     function move() {
+        if (!Player.collision())
+            return;
         Player.tail.unshift({ x: Player.pos.x, y: Player.pos.y });
         switch (Player.direction) {
             case Direction.Up:
@@ -379,17 +412,9 @@ var Snake;
             if (Player.pos.x > Vars.defaultSizeMap - 1)
                 Player.pos.x = 0;
         }
-        collision();
-        if (Snake.isStart)
-            draw();
+        snake();
     }
     Snake.move = move;
-    function collision() {
-        if (!Player.collision())
-            return end();
-        SnakeFoods.eat_event(Player.pos, Snake.onEat);
-    }
-    Snake.collision = collision;
 })(Snake || (Snake = {}));
 var Player;
 (function (Player) {
@@ -410,16 +435,20 @@ var Player;
         Player.direction = Direction.Down;
         Player.isWall = true;
         Player.score = 0;
-        Player.color_snake = Vars.color_snake;
     }
     Player.set_default = set_default;
+    function inc() {
+        Player.speed++;
+        Player.size++;
+    }
+    Player.inc = inc;
     function draw() {
-        Player.tail.forEach(function (e) { return Canvas.drawBox(e.x, e.y, Player.color_snake); });
+        Player.tail.forEach(function (e) { return Canvas.drawBox(e.x, e.y, Vars.color_snake); });
         if (Player.tail.length > Player.size) {
-            var last = Player.tail.pop();
-            Canvas.drawBox(last.x, last.y, Vars.color_background);
+            var _a = Player.tail.pop(), x = _a.x, y = _a.y;
+            Canvas.drawBox(x, y, Vars.color_background);
         }
-        Canvas.drawBox(Player.pos.x, Player.pos.y, Player.color_snake_head);
+        Canvas.drawBox(Player.pos.x, Player.pos.y, Vars.color_snake_head);
     }
     Player.draw = draw;
     function collision() {
@@ -438,6 +467,14 @@ var Player;
         return is_success;
     }
     Player.collision = collision;
+    function addScore(score) {
+        if (score === void 0) { score = 0; }
+        if (!score)
+            score = (Player.size + Player.speed) / 2 >> 0;
+        Player.score += score;
+        GUI.updateScore();
+    }
+    Player.addScore = addScore;
 })(Player || (Player = {}));
 var GUI;
 (function (GUI) {
@@ -498,6 +535,18 @@ var GUI;
         }
     }
     GUI.updateBest = updateBest;
+    function swipeToggle(setState) {
+        if (setState === void 0) { setState = undefined; }
+        var isset = typeof setState == 'undefined';
+        if (isset) {
+            setState = $('#mobile').getAttribute('data-type') == 'swipe';
+        }
+        Swipe.swipeEnabled = !setState;
+        if (isset)
+            localStorage.setItem('swipemode', (+setState).toString());
+        $('#mobile').setAttribute('data-type', setState ? 'buttons' : 'swipe');
+    }
+    GUI.swipeToggle = swipeToggle;
 })(GUI || (GUI = {}));
 var Swipe;
 (function (Swipe) {
@@ -507,11 +556,15 @@ var Swipe;
         Direction[Direction["Right"] = 37] = "Right";
         Direction[Direction["Left"] = 39] = "Left";
         Direction[Direction["Down"] = 40] = "Down";
+        Direction[Direction["Space"] = 32] = "Space";
     })(Direction || (Direction = {}));
+    Swipe.swipeEnabled = true;
     function swipebind(element, f) {
         var xDown = null;
         var yDown = null;
         element.addEventListener('touchstart', function (evt) {
+            if (!Swipe.swipeEnabled)
+                return;
             xDown = evt.touches[0].clientX;
             yDown = evt.touches[0].clientY;
         }, false);
@@ -528,11 +581,26 @@ var Swipe;
             else {
                 f(yDiff > 0 ? Direction.Up : Direction.Down);
             }
+            evt.preventDefault();
             xDown = null;
             yDown = null;
         }, false);
     }
     Swipe.swipebind = swipebind;
+    function doubletap(element, f) {
+        var lastTap = 0;
+        var firstTap = 0;
+        element.addEventListener('touchend', function (event) {
+            var currentTime = new Date().getTime();
+            var tapLength = currentTime - lastTap;
+            if (tapLength < 300 && tapLength > 0) {
+                event.preventDefault();
+                f(Direction.Space);
+            }
+            lastTap = currentTime;
+        });
+    }
+    Swipe.doubletap = doubletap;
 })(Swipe || (Swipe = {}));
 var Keyboard;
 (function (Keyboard) {
@@ -548,6 +616,7 @@ var Keyboard;
     function bind_keydown(selector, f) {
         selector.addEventListener('keydown', function (e) { return f(e.keyCode); });
         Swipe.swipebind(selector, function (e) { return f(e); });
+        Swipe.doubletap($('canvas'), function (e) { return f(e); });
     }
     Keyboard.bind_keydown = bind_keydown;
 })(Keyboard || (Keyboard = {}));
@@ -560,6 +629,10 @@ var SnakeFoods;
         return Vars.colors_food.splice(i, 1)[0];
     }
     SnakeFoods.rndColor = rndColor;
+    function draw() {
+        SnakeFoods.foods.forEach(function (e) { return Canvas.drawBox(e.x, e.y, get_color(e.name)); });
+    }
+    SnakeFoods.draw = draw;
     function clear() {
         SnakeFoods.foods = [];
     }
@@ -568,24 +641,33 @@ var SnakeFoods;
         foods.forEach(function (e) { return food_init(e); });
     }
     SnakeFoods.foods_init = foods_init;
-    function food_init(food, isRnd) {
-        if (isRnd === void 0) { isRnd = false; }
+    function food_init(food) {
         food = Object.copy(food);
         if (!food.color)
             food.color = rndColor();
         if (!food.repeatability)
             food.repeatability = 1;
         SnakeFoods.foods_type[food.name] = food;
-        if (isRnd)
-            rndFood(food.name);
     }
     SnakeFoods.food_init = food_init;
-    function eat_event(pos, onfood) {
+    function tick(food) {
+        var type_food = SnakeFoods.foods_type[food.name];
+        if (food.timeout > 0)
+            food.timeout--;
+        if (food.timeout == 0) {
+            remove_food_type(food);
+            if (type_food.remove_func)
+                type_food.remove_func();
+            Canvas.drawBox(food.x, food.y, Vars.color_background);
+        }
+    }
+    function eat_event() {
+        var pos = Player.pos;
         SnakeFoods.foods.forEach(function (e, i) {
             var type_food = SnakeFoods.foods_type[e.name];
             if (e.x == pos.x && e.y == pos.y) {
                 if (!type_food.isNotEat)
-                    SnakeFoods.foods.splice(i, 1);
+                    remove_food_type(e);
                 if (type_food.isOne)
                     disable_food(e.name);
                 if (type_food.func)
@@ -594,26 +676,25 @@ var SnakeFoods;
                     clearTimeout(type_food._timer);
                     type_food._timer = setTimeout(function () { return type_food.disabled(); }, type_food.disable_time * 1000);
                 }
-                if (onfood)
-                    onfood(type_food);
+                if (Snake.onEat)
+                    Snake.onEat(type_food);
             }
-            if (e.timeout > 0)
-                e.timeout--;
-            if (e.timeout == 0) {
-                SnakeFoods.foods.splice(i, 1);
-                if (type_food.remove_func)
-                    type_food.remove_func();
-                Canvas.drawBox(e.x, e.y, Vars.color_background);
-            }
+            tick(e);
         });
     }
     SnakeFoods.eat_event = eat_event;
     function remove_food(name) {
         SnakeFoods.foods = SnakeFoods.foods.filter(function (e) { return e.name !== name; });
         Canvas.first();
-        Snake.draw();
+        Snake.snake();
     }
     SnakeFoods.remove_food = remove_food;
+    function remove_food_type(food) {
+        SnakeFoods.foods = SnakeFoods.foods.filter(function (e) { return e.x != food.x || e.y != food.y; });
+        Canvas.first();
+        Snake.snake();
+    }
+    SnakeFoods.remove_food_type = remove_food_type;
     function disable_food(name) {
         SnakeFoods.foods_type[name].isDisable = true;
     }
@@ -622,31 +703,38 @@ var SnakeFoods;
         SnakeFoods.foods_type[name].isDisable = false;
     }
     SnakeFoods.enable_food = enable_food;
-    function rndFood(name) {
-        if (!SnakeFoods.foods_type[name] || SnakeFoods.foods_type[name].isDisable)
-            return;
-        var repeatability = SnakeFoods.foods_type[name].repeatability;
-        var timeout = SnakeFoods.foods_type[name].timeout || -1;
-        if (repeatability != 1 && Math.random() > repeatability)
-            return;
+    function rndPos() {
         var x = Math.random() * Vars.defaultSizeMap >> 0;
         var y = Math.random() * Vars.defaultSizeMap >> 0;
         if (Player.pos.x == x && Player.pos.y == y)
-            return rndFood(name);
+            return rndPos();
         for (var i = 0; i < SnakeFoods.foods.length; i++) {
             if (SnakeFoods.foods[i].x == x && SnakeFoods.foods[i].y == y)
-                return rndFood(name);
+                return rndPos();
         }
         for (var i = 0; i < Player.tail.length; i++) {
             if (Player.tail[i].x == x && Player.tail[i].y == y)
-                return rndFood(name);
+                return rndPos();
         }
-        SnakeFoods.foods.unshift({ x: x, y: y, name: name, timeout: timeout });
+        return { x: x, y: y };
+    }
+    SnakeFoods.rndPos = rndPos;
+    function addFood(name, pos) {
+        if (pos === void 0) { pos = null; }
+        var food = SnakeFoods.foods_type[name];
+        if (!food || food.isDisable)
+            return;
+        var repeatability = food.repeatability;
+        var timeout = food.timeout || -1;
+        if (repeatability != 1 && Math.random() > repeatability)
+            return;
+        pos = pos || rndPos();
+        SnakeFoods.foods.unshift({ x: pos.x, y: pos.y, name: name, timeout: timeout });
         return true;
     }
-    SnakeFoods.rndFood = rndFood;
+    SnakeFoods.addFood = addFood;
     function rndFoods() {
-        Object.keys(SnakeFoods.foods_type).forEach(function (e) { return rndFood(e); });
+        Object.keys(SnakeFoods.foods_type).forEach(function (e) { return addFood(e); });
     }
     SnakeFoods.rndFoods = rndFoods;
     function get_color(name) {
@@ -680,8 +768,21 @@ function start() {
     GUI.window_open('hide');
     Snake.start();
 }
-function unpause() {
-    Snake.isPause && Snake.pause();
+function unpause() { Snake.isPause && Snake.pause(); }
+function pauseToggle() { Snake.pause(); }
+function setting() { GUI.window_open('setting'); }
+function main() { GUI.window_open('start'); }
+function swipeToggle() { GUI.swipeToggle(); }
+function button_up() { Snake.keyboardEvent(Keyboard.Keys.Up); }
+function button_left() { Snake.keyboardEvent(Keyboard.Keys.Right); }
+function button_down() { Snake.keyboardEvent(Keyboard.Keys.Down); }
+function button_right() { Snake.keyboardEvent(Keyboard.Keys.Left); }
+function toggleDrawMode() {
+    var mode = +localStorage.getItem('useFullDraw') || 0;
+    localStorage.setItem('useFullDraw', (+(!mode)).toString());
+    Snake.useFullDraw = !!mode;
+    $('#drawmode span').innerHTML = !mode ? '1' : '0';
 }
+GUI.swipeToggle(+localStorage.getItem('swipemode') || 0);
 Snake.init('#snake');
 //# sourceMappingURL=main.js.map

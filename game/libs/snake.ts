@@ -9,43 +9,53 @@ namespace Snake {
   export let onEnd: Function = null;
   export let onEat: Function = null;
   export let onPause: Function = null;
+  export let useFullDraw = true; //+localStorage.getItem('useFullDraw') ? true : false; 
   let _timer = null;
   let _lastKeysPress = [];
+
+  function testDirection(e) {
+    if ((Keyboard.Keys.Up == e && Player.direction == Direction.Down) ||
+      (Keyboard.Keys.Down == e && Player.direction == Direction.Up) ||
+      (Keyboard.Keys.Left == e && Player.direction == Direction.Right) ||
+      (Keyboard.Keys.Right == e && Player.direction == Direction.Left))
+    return true
+  }
+
+  export function changeDrawVariant(usefull = false){
+    useFullDraw = usefull;
+    localStorage.setItem('useFullDraw', (+usefull).toString())
+  }
+
+  export function keyboardEvent(e){
+    if (Keyboard.Keys.Return == e) start()
+    if (Keyboard.Keys.Space == e) pause()
+
+    if(Keyboard.Keys.Up != e &&
+      Keyboard.Keys.Down != e &&
+      Keyboard.Keys.Left != e &&
+      Keyboard.Keys.Right != e) return;
+
+    if (!isStart || isPause) return;
+    let last = _lastKeysPress[_lastKeysPress.length - 1];
+    if(last == e || 
+      (Keyboard.Keys.Up == e && last == Direction.Down) ||
+      (Keyboard.Keys.Down == e && last == Direction.Up) ||
+      (Keyboard.Keys.Left == e && last == Direction.Right) ||
+      (Keyboard.Keys.Right == e && last == Direction.Left)
+    ) return;
+
+    _lastKeysPress.splice(3);
+    _lastKeysPress.push(e)
+  }
 
   export function init(canvas_selector: string) {
     Canvas.init(canvas_selector);
     GUI.bestShow();
-    Keyboard.bind_keydown($('body'), e => {
-      if (Keyboard.Keys.Return == e) start()
-      if (Keyboard.Keys.Space == e) pause()
-
-      if(Keyboard.Keys.Up != e &&
-        Keyboard.Keys.Down != e &&
-        Keyboard.Keys.Left != e &&
-        Keyboard.Keys.Right != e) return;
-
-      if (!isStart || isPause) return;
-      let last = _lastKeysPress[_lastKeysPress.length - 1];
-      if(last == e || 
-        (Keyboard.Keys.Up == e && last == Direction.Down) ||
-        (Keyboard.Keys.Down == e && last == Direction.Up) ||
-        (Keyboard.Keys.Left == e && last == Direction.Right) ||
-        (Keyboard.Keys.Right == e && last == Direction.Left)
-      ) return;
-
-      _lastKeysPress.splice(3);
-      _lastKeysPress.push(e)
-
-    })
+    Keyboard.bind_keydown($('body'), e => keyboardEvent(e))
   }
 
   export function changeDirection(e){
-    if (
-      (Keyboard.Keys.Up == e && Player.direction == Direction.Down) ||
-      (Keyboard.Keys.Down == e && Player.direction == Direction.Up) ||
-      (Keyboard.Keys.Left == e && Player.direction == Direction.Right) ||
-      (Keyboard.Keys.Right == e && Player.direction == Direction.Left)
-    ) return;
+    if (testDirection(e)) return;
     Player.direction = Direction[Keyboard.Keys[e]];
   }
 
@@ -61,11 +71,6 @@ namespace Snake {
     }, 300 - Player.speed * 3)
   }
 
-  export function addScore(score) {
-    Player.score += score;
-    GUI.updateScore();
-  }
-
   export function pause() {
     if (!isStart) return;
     GUI.window_open('hide')
@@ -79,10 +84,16 @@ namespace Snake {
     if (onPause) onPause(isPause, isStart);
   }
 
-  export function draw() {
-    isLockKeyboard = false;
-    SnakeFoods.foods.forEach(e => Canvas.drawBox(e.x, e.y, SnakeFoods.get_color(e.name)))
-    Player.draw()
+  export function snake() {
+    SnakeFoods.eat_event();
+    
+    if(!isStart || !Player.collision()) return end();
+    if(isStart && useFullDraw && Player.collision()) Canvas.first()
+
+    if(isStart) {
+      Player.draw();
+      SnakeFoods.draw();
+    }
   }
 
   export function end() {
@@ -104,7 +115,7 @@ namespace Snake {
 
     isStart = true;
     SnakeFoods.clear();
-    SnakeFoods.rndFood('eat');
+    SnakeFoods.addFood('eat');
 
     run();
     GUI.window_open('hide')
@@ -113,6 +124,7 @@ namespace Snake {
   }
 
   export function move() {
+    if(!Player.collision()) return;
     Player.tail.unshift({ x: Player.pos.x, y: Player.pos.y })
     switch (Player.direction) {
       case Direction.Up: Player.pos.y--; break;
@@ -126,13 +138,7 @@ namespace Snake {
       if (Player.pos.y > Vars.defaultSizeMap - 1) Player.pos.y = 0;
       if (Player.pos.x > Vars.defaultSizeMap - 1) Player.pos.x = 0;
     }
-    collision();
-    if(isStart) draw();
-  }
-
-  export function collision(){
-    if(!Player.collision()) return end();
-    SnakeFoods.eat_event(Player.pos, onEat);
+    snake();
   }
 
 }
