@@ -1,5 +1,6 @@
 /// <reference path="vars.ts"/>
 
+let old = null;
 namespace SnakeFoodsTypes {
   export let foods: FoodType[] = [
     {
@@ -7,6 +8,12 @@ namespace SnakeFoodsTypes {
       color: Vars.color_food,
       repeatability: 1,
       func: () => {
+/*         if (old && (old.x == Player.pos.x && old.y == Player.pos.y)){
+          debugger;
+        }
+
+        old = Object.copy(Player.pos) */
+
         Player.inc();
         Player.addScore();
         SnakeFoods.addFood('eat');
@@ -17,34 +24,20 @@ namespace SnakeFoodsTypes {
         SnakeFoods.addFood('size_reduce')
         SnakeFoods.addFood('speed_add')
         SnakeFoods.addFood('size_add')
-        SnakeFoods.addFood('speed_reduce')
         SnakeFoods.addFood('bonus_x2')
         SnakeFoods.addFood('bonus_1000')
         SnakeFoods.addFood('manyfood')
         SnakeFoods.addFood('clearwall')
         SnakeFoods.addFood('hell')
         SnakeFoods.addFood('exithell')
-
-        Snake.snake();
-      }
-    },
-    {
-      name: 'simple_food',
-      color: Vars.color_food,
-      repeatability: .8,
-      func: () => {
-        Player.inc();
-        Player.addScore();
       }
     },
     {
       name: 'manyfood',
       repeatability: 0.05,
       timeout: 30,
-      disable_time: 15,
-      disabled: () => SnakeFoods.remove_food('simple_food'),
       func: () => {
-        for (let i = 0; i < 10; i++) SnakeFoods.addFood('simple_food');
+        SnakeFoods.addFood('eat');
       }
     },
     {
@@ -61,14 +54,10 @@ namespace SnakeFoodsTypes {
       disabled: () => {
         Player.isWall = true;
         Vars.color_border = DefaultVars.color_border;
-        Canvas.first()
-        Snake.snake()
       },
       func: () => {
         Player.isWall = false;
         Vars.color_border = '#C0C5CE';
-        Canvas.first()
-        Snake.snake()
       }
     },
     {
@@ -123,6 +112,7 @@ namespace SnakeFoodsTypes {
     },
     {
       name: 'feces',
+      isNotEat: true,
       color: Vars.color_border,
       repeatability: 0.6,
       func: () => Snake.end()
@@ -150,8 +140,8 @@ namespace SnakeFoodsTypes {
         Canvas.first();  
 
         SnakeFoods.clear();
+        
         SnakeFoods.addFood('eat');
-        Snake.snake();
       }
     },
     {
@@ -166,9 +156,7 @@ namespace SnakeFoodsTypes {
         setTimeout(e => SnakeFoods.foods_type['hell'].isDisable = false, 100);
         setTimeout(e => SnakeFoods.foods_type['exithell'].isDisable = true, 100);
         Player.isWall = true;
-        SnakeFoods.foods_type['feces'].repeatability = 0.6
-        Canvas.first();  
-        Snake.snake();
+        SnakeFoods.foods_type['feces'].repeatability = 0.6;
       }
     }
   ]

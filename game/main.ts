@@ -46,13 +46,6 @@ function button_up(){ Snake.keyboardEvent(Keyboard.Keys.Up) }
 function button_left(){ Snake.keyboardEvent(Keyboard.Keys.Right) }
 function button_down(){ Snake.keyboardEvent(Keyboard.Keys.Down) }
 function button_right(){ Snake.keyboardEvent(Keyboard.Keys.Left) }
-function toggleDrawMode(){ 
-  let mode = +localStorage.getItem('useFullDraw') || 0;
-  localStorage.setItem('useFullDraw', (+(!mode)).toString() )
-  Snake.useFullDraw = !!mode;
-
-  $('#drawmode span').innerHTML = !mode ? '1' : '0';
-}
 
 
 GUI.swipeToggle(+localStorage.getItem('swipemode') || 0)

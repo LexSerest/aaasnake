@@ -9,7 +9,6 @@ namespace Snake {
   export let onEnd: Function = null;
   export let onEat: Function = null;
   export let onPause: Function = null;
-  export let useFullDraw = true; //+localStorage.getItem('useFullDraw') ? true : false; 
   let _timer = null;
   let _lastKeysPress = [];
 
@@ -19,11 +18,6 @@ namespace Snake {
       (Keyboard.Keys.Left == e && Player.direction == Direction.Right) ||
       (Keyboard.Keys.Right == e && Player.direction == Direction.Left))
     return true
-  }
-
-  export function changeDrawVariant(usefull = false){
-    useFullDraw = usefull;
-    localStorage.setItem('useFullDraw', (+usefull).toString())
   }
 
   export function keyboardEvent(e){
@@ -66,8 +60,10 @@ namespace Snake {
     _timer = setTimeout(() => {
       let e = _lastKeysPress.shift();
       if(e) changeDirection(e);
-      Snake.move();
-      if (isStart) run();
+      if (isStart) {
+        Snake.move();
+        run();
+      }
     }, 300 - Player.speed * 3)
   }
 
@@ -85,15 +81,9 @@ namespace Snake {
   }
 
   export function snake() {
-    SnakeFoods.eat_event();
-    
-    if(!isStart || !Player.collision()) return end();
-    if(isStart && useFullDraw && Player.collision()) Canvas.first()
-
-    if(isStart) {
-      Player.draw();
-      SnakeFoods.draw();
-    }
+    Canvas.first()
+    Player.draw();
+    SnakeFoods.draw();
   }
 
   export function end() {
@@ -124,7 +114,7 @@ namespace Snake {
   }
 
   export function move() {
-    if(!Player.collision()) return;
+
     Player.tail.unshift({ x: Player.pos.x, y: Player.pos.y })
     switch (Player.direction) {
       case Direction.Up: Player.pos.y--; break;
@@ -138,6 +128,10 @@ namespace Snake {
       if (Player.pos.y > Vars.defaultSizeMap - 1) Player.pos.y = 0;
       if (Player.pos.x > Vars.defaultSizeMap - 1) Player.pos.x = 0;
     }
+
+    if(!isStart || !Player.collision()) return end();
+    SnakeFoods.eat_event();
+    if(!isStart) Player.pos = Player.tail.shift();
     snake();
   }
 

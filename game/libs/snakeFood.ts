@@ -45,8 +45,8 @@ namespace SnakeFoods {
 
       if (e.x == pos.x && e.y == pos.y)  {
         if(!type_food.isNotEat) remove_food_type(e)
-        if(type_food.isOne) disable_food(e.name);
         if(type_food.func) type_food.func(e);
+        if(type_food.isOne) disable_food(e.name);
         if(type_food.disable_time) {
           clearTimeout(type_food._timer)
           type_food._timer = setTimeout(() => type_food.disabled(), type_food.disable_time * 1000);
@@ -60,13 +60,11 @@ namespace SnakeFoods {
 
   export function remove_food(name){
     foods = foods.filter(e => e.name !== name);
-    Canvas.first()
     Snake.snake()
   }
 
   export function remove_food_type(food: Food){
     foods = foods.filter(e => e.x != food.x || e.y != food.y);
-    Canvas.first()
     Snake.snake()
   }
 
@@ -89,7 +87,6 @@ namespace SnakeFoods {
     for (let i = 0; i < Player.tail.length; i++) {
       if (Player.tail[i].x == x && Player.tail[i].y == y) return rndPos();
     }
-
     return {x, y};
   }
 
@@ -102,6 +99,12 @@ namespace SnakeFoods {
 
     pos = pos || rndPos();
     foods.unshift({ x: pos.x, y: pos.y, name, timeout });
+    return true;
+  }
+
+  export function addFoodDev(name: string, pos: Pos = null){
+    pos = pos || rndPos();
+    foods.unshift({ x: pos.x, y: pos.y, name, timeout: -1 });
     return true;
   }
 
