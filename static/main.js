@@ -43,6 +43,7 @@ var Vars;
     }
     Vars.set_default = set_default;
 })(Vars || (Vars = {}));
+var old = null;
 var SnakeFoodsTypes;
 (function (SnakeFoodsTypes) {
     SnakeFoodsTypes.foods = [
@@ -60,34 +61,20 @@ var SnakeFoodsTypes;
                 SnakeFoods.addFood('size_reduce');
                 SnakeFoods.addFood('speed_add');
                 SnakeFoods.addFood('size_add');
-                SnakeFoods.addFood('speed_reduce');
                 SnakeFoods.addFood('bonus_x2');
                 SnakeFoods.addFood('bonus_1000');
                 SnakeFoods.addFood('manyfood');
                 SnakeFoods.addFood('clearwall');
                 SnakeFoods.addFood('hell');
                 SnakeFoods.addFood('exithell');
-                Snake.snake();
-            }
-        },
-        {
-            name: 'simple_food',
-            color: Vars.color_food,
-            repeatability: .8,
-            func: function () {
-                Player.inc();
-                Player.addScore();
             }
         },
         {
             name: 'manyfood',
             repeatability: 0.05,
             timeout: 30,
-            disable_time: 15,
-            disabled: function () { return SnakeFoods.remove_food('simple_food'); },
             func: function () {
-                for (var i = 0; i < 10; i++)
-                    SnakeFoods.addFood('simple_food');
+                SnakeFoods.addFood('eat');
             }
         },
         {
@@ -104,14 +91,10 @@ var SnakeFoodsTypes;
             disabled: function () {
                 Player.isWall = true;
                 Vars.color_border = DefaultVars.color_border;
-                Canvas.first();
-                Snake.snake();
             },
             func: function () {
                 Player.isWall = false;
                 Vars.color_border = '#C0C5CE';
-                Canvas.first();
-                Snake.snake();
             }
         },
         {
@@ -168,6 +151,7 @@ var SnakeFoodsTypes;
         },
         {
             name: 'feces',
+            isNotEat: true,
             color: Vars.color_border,
             repeatability: 0.6,
             func: function () { return Snake.end(); }
@@ -194,7 +178,6 @@ var SnakeFoodsTypes;
                 Canvas.first();
                 SnakeFoods.clear();
                 SnakeFoods.addFood('eat');
-                Snake.snake();
             }
         },
         {
@@ -210,8 +193,6 @@ var SnakeFoodsTypes;
                 setTimeout(function (e) { return SnakeFoods.foods_type['exithell'].isDisable = true; }, 100);
                 Player.isWall = true;
                 SnakeFoods.foods_type['feces'].repeatability = 0.6;
-                Canvas.first();
-                Snake.snake();
             }
         }
     ];
@@ -271,7 +252,6 @@ var Snake;
     Snake.onEnd = null;
     Snake.onEat = null;
     Snake.onPause = null;
-    Snake.useFullDraw = true;
     var _timer = null;
     var _lastKeysPress = [];
     function testDirection(e) {
@@ -281,12 +261,6 @@ var Snake;
             (Keyboard.Keys.Right == e && Player.direction == Direction.Left))
             return true;
     }
-    function changeDrawVariant(usefull) {
-        if (usefull === void 0) { usefull = false; }
-        Snake.useFullDraw = usefull;
-        localStorage.setItem('useFullDraw', (+usefull).toString());
-    }
-    Snake.changeDrawVariant = changeDrawVariant;
     function keyboardEvent(e) {
         if (Keyboard.Keys.Return == e)
             start();
@@ -328,9 +302,10 @@ var Snake;
             var e = _lastKeysPress.shift();
             if (e)
                 changeDirection(e);
-            Snake.move();
-            if (Snake.isStart)
+            if (Snake.isStart) {
+                Snake.move();
                 run();
+            }
         }, 300 - Player.speed * 3);
     }
     Snake.run = run;
@@ -348,15 +323,9 @@ var Snake;
     }
     Snake.pause = pause;
     function snake() {
-        SnakeFoods.eat_event();
-        if (!Snake.isStart || !Player.collision())
-            return end();
-        if (Snake.isStart && Snake.useFullDraw && Player.collision())
-            Canvas.first();
-        if (Snake.isStart) {
-            Player.draw();
-            SnakeFoods.draw();
-        }
+        Canvas.first();
+        Player.draw();
+        SnakeFoods.draw();
     }
     Snake.snake = snake;
     function end() {
@@ -385,8 +354,6 @@ var Snake;
     }
     Snake.start = start;
     function move() {
-        if (!Player.collision())
-            return;
         Player.tail.unshift({ x: Player.pos.x, y: Player.pos.y });
         switch (Player.direction) {
             case Direction.Up:
@@ -412,6 +379,11 @@ var Snake;
             if (Player.pos.x > Vars.defaultSizeMap - 1)
                 Player.pos.x = 0;
         }
+        if (!Snake.isStart || !Player.collision())
+            return end();
+        SnakeFoods.eat_event();
+        if (!Snake.isStart)
+            Player.pos = Player.tail.shift();
         snake();
     }
     Snake.move = move;
@@ -668,10 +640,10 @@ var SnakeFoods;
             if (e.x == pos.x && e.y == pos.y) {
                 if (!type_food.isNotEat)
                     remove_food_type(e);
-                if (type_food.isOne)
-                    disable_food(e.name);
                 if (type_food.func)
                     type_food.func(e);
+                if (type_food.isOne)
+                    disable_food(e.name);
                 if (type_food.disable_time) {
                     clearTimeout(type_food._timer);
                     type_food._timer = setTimeout(function () { return type_food.disabled(); }, type_food.disable_time * 1000);
@@ -685,13 +657,11 @@ var SnakeFoods;
     SnakeFoods.eat_event = eat_event;
     function remove_food(name) {
         SnakeFoods.foods = SnakeFoods.foods.filter(function (e) { return e.name !== name; });
-        Canvas.first();
         Snake.snake();
     }
     SnakeFoods.remove_food = remove_food;
     function remove_food_type(food) {
         SnakeFoods.foods = SnakeFoods.foods.filter(function (e) { return e.x != food.x || e.y != food.y; });
-        Canvas.first();
         Snake.snake();
     }
     SnakeFoods.remove_food_type = remove_food_type;
@@ -733,6 +703,13 @@ var SnakeFoods;
         return true;
     }
     SnakeFoods.addFood = addFood;
+    function addFoodDev(name, pos) {
+        if (pos === void 0) { pos = null; }
+        pos = pos || rndPos();
+        SnakeFoods.foods.unshift({ x: pos.x, y: pos.y, name: name, timeout: -1 });
+        return true;
+    }
+    SnakeFoods.addFoodDev = addFoodDev;
     function rndFoods() {
         Object.keys(SnakeFoods.foods_type).forEach(function (e) { return addFood(e); });
     }
@@ -777,12 +754,6 @@ function button_up() { Snake.keyboardEvent(Keyboard.Keys.Up); }
 function button_left() { Snake.keyboardEvent(Keyboard.Keys.Right); }
 function button_down() { Snake.keyboardEvent(Keyboard.Keys.Down); }
 function button_right() { Snake.keyboardEvent(Keyboard.Keys.Left); }
-function toggleDrawMode() {
-    var mode = +localStorage.getItem('useFullDraw') || 0;
-    localStorage.setItem('useFullDraw', (+(!mode)).toString());
-    Snake.useFullDraw = !!mode;
-    $('#drawmode span').innerHTML = !mode ? '1' : '0';
-}
 GUI.swipeToggle(+localStorage.getItem('swipemode') || 0);
 Snake.init('#snake');
 //# sourceMappingURL=main.js.map
