@@ -3,6 +3,11 @@
   src: url("/static/pixel.otf") format("opentype");
 }
 
+body, html {
+  position: fixed;
+  -webkit-overflow-scrolling: auto;
+}
+
 html {
   height: 100%;
 }
@@ -13,7 +18,9 @@ body {
   height: 100%;
   box-sizing: border-box;
   padding: 8px;
-  margin: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
 }
 main {
   display: flex;
@@ -330,11 +337,23 @@ footer {
 $arrow-size: 7px;
 $arrow-color: #000;
 
-.move {
+.button-mini.move {
   position: absolute;
   width: 50px;
   min-width: 50px;
   height: 50px;
+  outline: none !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    background: #ffdd35 !important;
+  }
 
   &::after{
     width: 0;

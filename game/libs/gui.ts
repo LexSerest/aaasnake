@@ -2,11 +2,11 @@ namespace GUI {
   let timers: Element = $('#timers');
   let _timers = {};
 
-  export function addTimer(color: string, duration: number){
-    if(_timers[color]){
+  export function addTimer(color: string, duration: number) {
+    if (_timers[color]) {
       clearTimeout(_timers[color]._timer);
       _timers[color].element.remove()
-    } 
+    }
 
     let element = document.createElement('div');
     element.setAttribute('class', 'timer');
@@ -23,51 +23,51 @@ namespace GUI {
     _timers[color] = { _timer, element }
   }
 
-  export function clearTimer(){
+  export function clearTimer() {
     timers.innerHTML = '';
   }
 
-  export function legendOpen(name, color){
-    let el: HTMLElement = $('.notopen.notopens[data-name="'+ name +'"]');
-    if(!el) return;
+  export function legendOpen(name, color) {
+    let el: HTMLElement = $('.notopen.notopens[data-name="' + name + '"]');
+    if (!el) return;
     el.classList.remove('notopen');
     el.style.background = color;
   }
 
-  export function legengReset(){
+  export function legengReset() {
     $$('.notopens').forEach(e => {
       e.classList.add('notopen');
       e.style.background = 'transparent';
     })
   }
 
-  export function window_open(name){
+  export function window_open(name) {
     $('#windows').setAttribute('data-show', name);
   }
 
-  export function updateScore(){
+  export function updateScore() {
     $$('.score span').forEach(e => e.innerHTML = Player.score);
   }
 
-  export function bestShow(){
+  export function bestShow() {
     $$('.best span').forEach(e => e.innerHTML = (+localStorage.getItem("best") || 0));
   }
 
-  export function updateBest(){
-    if((+localStorage.getItem("best") || 0) < Player.score){
+  export function updateBest() {
+    if ((+localStorage.getItem("best") || 0) < Player.score) {
       localStorage.setItem("best", Player.score.toString());
       $$('.best span').forEach(e => e.innerHTML = Player.score)
     }
   }
 
-  export function swipeToggle(setState = undefined){
+  export function swipeToggle(setState = undefined) {
     let isset = typeof setState == 'undefined';
-    if(isset){
+    if (isset) {
       setState = $('#mobile').getAttribute('data-type') == 'swipe';
     }
 
     Swipe.swipeEnabled = !setState;
-    if(isset) localStorage.setItem('swipemode', (+setState).toString()) 
+    if (isset) localStorage.setItem('swipemode', (+setState).toString())
     $('#mobile').setAttribute('data-type', setState ? 'buttons' : 'swipe');
   }
 }

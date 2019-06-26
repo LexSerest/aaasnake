@@ -25,7 +25,10 @@ namespace Player {
   }
 
   export function draw() {
-    Player.tail.forEach(e => Canvas.drawBox(e.x, e.y, Vars.color_snake))
+    for(let i=0; i< Player.tail.length; i++){ 
+      let e = Player.tail[i];
+      Canvas.drawBox(e.x, e.y, Vars.color_snake)
+    }
     if (tail.length > size) {
       let {x, y} = tail.pop();
       Canvas.drawBox(x, y, Vars.color_background)
@@ -35,9 +38,11 @@ namespace Player {
 
   export function collision() {
     let is_success = true;
-    Player.tail.forEach((e, i) => {
-      if (i && i != Player.tail.length - 1 && e.x == Player.pos.x && e.y == Player.pos.y) is_success = false;
-    })
+    for(let i=0; i< Player.tail.length; i++){
+      let e = Player.tail[i];
+      if (i && i != Player.tail.length - 1 && e.x == Player.pos.x && e.y == Player.pos.y) 
+        is_success = false;
+    }
 
     if (Player.isWall) {
       if (

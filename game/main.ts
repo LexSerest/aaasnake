@@ -9,43 +9,43 @@
 /// <reference path="eats_types.ts"/>
 
 
-Snake.onStart = function(){
+Snake.onStart = function () {
   GUI.updateScore();
   GUI.legengReset();
   GUI.clearTimer();
 }
 
-Snake.onEnd = function(){
+Snake.onEnd = function () {
   GUI.window_open('endgame');
   GUI.clearTimer();
 }
 
-Snake.onEat = function(food: FoodType){
-  if(food.disable_time) GUI.addTimer(food.color, food.disable_time);
+Snake.onEat = function (food: FoodType) {
+  if (food.disable_time) GUI.addTimer(food.color, food.disable_time);
   GUI.legendOpen(food.name, food.color);
 }
 
-Snake.onPause = function(isPause, isStart) {
-  if(!isStart) return;
-  if(isPause) GUI.window_open('pause');
+Snake.onPause = function (isPause, isStart) {
+  if (!isStart) return;
+  if (isPause) GUI.window_open('pause');
   else GUI.window_open('hide');
 }
 
-function start(){
+function start() {
   GUI.window_open('hide');
   Snake.start();
 }
 
-function unpause(){ Snake.isPause && Snake.pause() }
-function pauseToggle(){ Snake.pause() }
-function setting(){ GUI.window_open('setting'); }
-function main(){ GUI.window_open('start'); }
+function unpause() { Snake.isPause && Snake.pause() }
+function pauseToggle() { Snake.pause() }
+function setting() { GUI.window_open('setting'); }
+function main() { GUI.window_open('start'); }
 
-function swipeToggle(){ GUI.swipeToggle(); }
-function button_up(){ Snake.keyboardEvent(Keyboard.Keys.Up) }
-function button_left(){ Snake.keyboardEvent(Keyboard.Keys.Right) }
-function button_down(){ Snake.keyboardEvent(Keyboard.Keys.Down) }
-function button_right(){ Snake.keyboardEvent(Keyboard.Keys.Left) }
+function swipeToggle() { GUI.swipeToggle(); }
+function button_up() { Snake.keyboardEvent(Keyboard.Keys.Up) }
+function button_left() { Snake.keyboardEvent(Keyboard.Keys.Right) }
+function button_down() { Snake.keyboardEvent(Keyboard.Keys.Down) }
+function button_right() { Snake.keyboardEvent(Keyboard.Keys.Left) }
 
 
 GUI.swipeToggle(+localStorage.getItem('swipemode') || 0)

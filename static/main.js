@@ -258,6 +258,10 @@ var Snake;
         if ((Keyboard.Keys.Up == e && Player.direction == Direction.Down) ||
             (Keyboard.Keys.Down == e && Player.direction == Direction.Up) ||
             (Keyboard.Keys.Left == e && Player.direction == Direction.Right) ||
+            (Keyboard.Keys.Right == e && Player.direction == Direction.Left) ||
+            (Keyboard.Keys.Up == e && Player.direction == Direction.Up) ||
+            (Keyboard.Keys.Down == e && Player.direction == Direction.Down) ||
+            (Keyboard.Keys.Left == e && Player.direction == Direction.Right) ||
             (Keyboard.Keys.Right == e && Player.direction == Direction.Left))
             return true;
     }
@@ -273,15 +277,19 @@ var Snake;
             return;
         if (!Snake.isStart || Snake.isPause)
             return;
-        var last = _lastKeysPress[_lastKeysPress.length - 1];
+        var last = _lastKeysPress[_lastKeysPress.length - 1] || Player.direction;
         if (last == e ||
             (Keyboard.Keys.Up == e && last == Direction.Down) ||
             (Keyboard.Keys.Down == e && last == Direction.Up) ||
             (Keyboard.Keys.Left == e && last == Direction.Right) ||
-            (Keyboard.Keys.Right == e && last == Direction.Left))
+            (Keyboard.Keys.Right == e && last == Direction.Left) ||
+            (Keyboard.Keys.Up == e && last == Direction.Up) ||
+            (Keyboard.Keys.Down == e && last == Direction.Down) ||
+            (Keyboard.Keys.Left == e && last == Direction.Left) ||
+            (Keyboard.Keys.Right == e && last == Direction.Right))
             return;
-        _lastKeysPress.splice(3);
-        _lastKeysPress.push(e);
+        if (_lastKeysPress.length < 3)
+            _lastKeysPress.push(e);
     }
     Snake.keyboardEvent = keyboardEvent;
     function init(canvas_selector) {
@@ -300,8 +308,9 @@ var Snake;
         clearTimeout(_timer);
         _timer = setTimeout(function () {
             var e = _lastKeysPress.shift();
-            if (e)
+            if (e) {
                 changeDirection(e);
+            }
             if (Snake.isStart) {
                 Snake.move();
                 run();
@@ -415,7 +424,10 @@ var Player;
     }
     Player.inc = inc;
     function draw() {
-        Player.tail.forEach(function (e) { return Canvas.drawBox(e.x, e.y, Vars.color_snake); });
+        for (var i = 0; i < Player.tail.length; i++) {
+            var e = Player.tail[i];
+            Canvas.drawBox(e.x, e.y, Vars.color_snake);
+        }
         if (Player.tail.length > Player.size) {
             var _a = Player.tail.pop(), x = _a.x, y = _a.y;
             Canvas.drawBox(x, y, Vars.color_background);
@@ -425,10 +437,11 @@ var Player;
     Player.draw = draw;
     function collision() {
         var is_success = true;
-        Player.tail.forEach(function (e, i) {
+        for (var i = 0; i < Player.tail.length; i++) {
+            var e = Player.tail[i];
             if (i && i != Player.tail.length - 1 && e.x == Player.pos.x && e.y == Player.pos.y)
                 is_success = false;
-        });
+        }
         if (Player.isWall) {
             if (Player.pos.y < 0 ||
                 Player.pos.x < 0 ||
@@ -553,7 +566,6 @@ var Swipe;
             else {
                 f(yDiff > 0 ? Direction.Up : Direction.Down);
             }
-            evt.preventDefault();
             xDown = null;
             yDown = null;
         }, false);
@@ -602,7 +614,10 @@ var SnakeFoods;
     }
     SnakeFoods.rndColor = rndColor;
     function draw() {
-        SnakeFoods.foods.forEach(function (e) { return Canvas.drawBox(e.x, e.y, get_color(e.name)); });
+        for (var i = 0; i < SnakeFoods.foods.length; i++) {
+            var e = SnakeFoods.foods[i];
+            Canvas.drawBox(e.x, e.y, get_color(e.name));
+        }
     }
     SnakeFoods.draw = draw;
     function clear() {
@@ -635,7 +650,8 @@ var SnakeFoods;
     }
     function eat_event() {
         var pos = Player.pos;
-        SnakeFoods.foods.forEach(function (e, i) {
+        var _loop_1 = function (i) {
+            var e = SnakeFoods.foods[i];
             var type_food = SnakeFoods.foods_type[e.name];
             if (e.x == pos.x && e.y == pos.y) {
                 if (!type_food.isNotEat)
@@ -652,7 +668,10 @@ var SnakeFoods;
                     Snake.onEat(type_food);
             }
             tick(e);
-        });
+        };
+        for (var i = 0; i < SnakeFoods.foods.length; i++) {
+            _loop_1(i);
+        }
     }
     SnakeFoods.eat_event = eat_event;
     function remove_food(name) {

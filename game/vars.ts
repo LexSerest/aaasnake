@@ -11,7 +11,7 @@ namespace DefaultVars {
   export const color_food = '#28b528';
   export const colors_food = [
     '#b52828', '#b5289d', '#5828b5', '#288eb5', '#28b594', '#b5b128',
-    '#ea9a9a', '#ea9ae4', '#337341', '#9aeaab', '#c4ea9a', '#ead59a', 
+    '#ea9a9a', '#ea9ae4', '#337341', '#9aeaab', '#c4ea9a', '#ead59a',
     '#FFFFFF', '#0e0086', '#860038'
   ];
 }
@@ -27,7 +27,7 @@ namespace Vars {
   export let color_food = DefaultVars.color_food;
   export let colors_food = DefaultVars.colors_food.slice(0);
 
-  export function set_default(){
+  export function set_default() {
     Object.keys(DefaultVars).forEach(e => Vars[e] = DefaultVars[e])
     colors_food = DefaultVars.colors_food.slice(0);
   }

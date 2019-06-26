@@ -16,30 +16,38 @@ namespace Snake {
     if ((Keyboard.Keys.Up == e && Player.direction == Direction.Down) ||
       (Keyboard.Keys.Down == e && Player.direction == Direction.Up) ||
       (Keyboard.Keys.Left == e && Player.direction == Direction.Right) ||
-      (Keyboard.Keys.Right == e && Player.direction == Direction.Left))
-    return true
+      (Keyboard.Keys.Right == e && Player.direction == Direction.Left) ||
+      (Keyboard.Keys.Up == e && Player.direction == Direction.Up) ||
+      (Keyboard.Keys.Down == e && Player.direction == Direction.Down) ||
+      (Keyboard.Keys.Left == e && Player.direction == Direction.Right) ||
+      (Keyboard.Keys.Right == e && Player.direction == Direction.Left)
+    )
+      return true
   }
 
-  export function keyboardEvent(e){
+  export function keyboardEvent(e) {
     if (Keyboard.Keys.Return == e) start()
     if (Keyboard.Keys.Space == e) pause()
 
-    if(Keyboard.Keys.Up != e &&
+    if (Keyboard.Keys.Up != e &&
       Keyboard.Keys.Down != e &&
       Keyboard.Keys.Left != e &&
       Keyboard.Keys.Right != e) return;
 
     if (!isStart || isPause) return;
-    let last = _lastKeysPress[_lastKeysPress.length - 1];
-    if(last == e || 
+    let last = _lastKeysPress[_lastKeysPress.length - 1] || Player.direction;
+    if (last == e ||
       (Keyboard.Keys.Up == e && last == Direction.Down) ||
       (Keyboard.Keys.Down == e && last == Direction.Up) ||
       (Keyboard.Keys.Left == e && last == Direction.Right) ||
-      (Keyboard.Keys.Right == e && last == Direction.Left)
+      (Keyboard.Keys.Right == e && last == Direction.Left) ||
+      (Keyboard.Keys.Up == e && last == Direction.Up) ||
+      (Keyboard.Keys.Down == e && last == Direction.Down) ||
+      (Keyboard.Keys.Left == e && last == Direction.Left) ||
+      (Keyboard.Keys.Right == e && last == Direction.Right)
     ) return;
 
-    _lastKeysPress.splice(3);
-    _lastKeysPress.push(e)
+    if (_lastKeysPress.length < 3) _lastKeysPress.push(e);
   }
 
   export function init(canvas_selector: string) {
@@ -48,7 +56,7 @@ namespace Snake {
     Keyboard.bind_keydown($('body'), e => keyboardEvent(e))
   }
 
-  export function changeDirection(e){
+  export function changeDirection(e) {
     if (testDirection(e)) return;
     Player.direction = Direction[Keyboard.Keys[e]];
   }
@@ -59,7 +67,9 @@ namespace Snake {
     clearTimeout(_timer);
     _timer = setTimeout(() => {
       let e = _lastKeysPress.shift();
-      if(e) changeDirection(e);
+      if (e) {
+        changeDirection(e);
+      }
       if (isStart) {
         Snake.move();
         run();
@@ -97,7 +107,7 @@ namespace Snake {
       isPause = false;
       onPause(false);
     }
-    
+
     Vars.set_default();
     Player.set_default();
     SnakeFoods.foods_init(SnakeFoodsTypes.foods);
@@ -129,9 +139,9 @@ namespace Snake {
       if (Player.pos.x > Vars.defaultSizeMap - 1) Player.pos.x = 0;
     }
 
-    if(!isStart || !Player.collision()) return end();
+    if (!isStart || !Player.collision()) return end();
     SnakeFoods.eat_event();
-    if(!isStart) Player.pos = Player.tail.shift();
+    if (!isStart) Player.pos = Player.tail.shift();
     snake();
   }
 

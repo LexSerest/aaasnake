@@ -8,11 +8,11 @@ namespace SnakeFoodsTypes {
       color: Vars.color_food,
       repeatability: 1,
       func: () => {
-/*         if (old && (old.x == Player.pos.x && old.y == Player.pos.y)){
-          debugger;
-        }
-
-        old = Object.copy(Player.pos) */
+        /*         if (old && (old.x == Player.pos.x && old.y == Player.pos.y)){
+                  debugger;
+                }
+        
+                old = Object.copy(Player.pos) */
 
         Player.inc();
         Player.addScore();
@@ -137,10 +137,10 @@ namespace SnakeFoodsTypes {
         Vars.color_snake = '#664f4f';
         Vars.color_snake_head = '#5a4747';
         SnakeFoods.foods_type['feces'].repeatability = 1;
-        Canvas.first();  
+        Canvas.first();
 
         SnakeFoods.clear();
-        
+
         SnakeFoods.addFood('eat');
       }
     },
