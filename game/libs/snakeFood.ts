@@ -1,10 +1,36 @@
-namespace SnakeFoods {
+import { Vars, DefaultVars } from '../vars';
+import Canvas from './canvas';
+import Player from './player';
+import Snake from './snake';
+import GUI from './gui';
+import Foods from '../foods/index';
+
+
+namespace SnakeFood {
+
   export let foods: Food[] = [];
   export let foods_type: FoodTypes = {};
+  export let iteration = 0;
+  export let _iterationArr = [];
+
+  let foods_data = [];
+
+  export function init() {
+    foods = [];
+    foods_type = {};
+    iteration = 0;
+    _iterationArr = [];
+    foods_init();
+  }
 
   export function rndColor() {
     let i = Math.random() * Vars.colors_food.length >> 0;
     return Vars.colors_food.splice(i, 1)[0];
+  }
+
+  export function rndColorReset() {
+    Vars.colors_food = DefaultVars.colors_food.slice(0)
+    return true;
   }
 
   export function draw() {
@@ -18,8 +44,8 @@ namespace SnakeFoods {
     foods = [];
   }
 
-  export function foods_init(foods: FoodType[]) {
-    foods.forEach(e => food_init(e))
+  export function foods_init(_foods?: FoodType[]) {
+    (_foods || Foods).forEach(e => food_init(e))
   }
 
   export function food_init(food: FoodType) {
@@ -29,7 +55,7 @@ namespace SnakeFoods {
     foods_type[food.name] = food;
   }
 
-  function tick(food: Food) {
+  export function tick(food: Food) {
     const type_food: FoodType = foods_type[food.name];
 
     if (food.timeout > 0) food.timeout--;
@@ -49,18 +75,21 @@ namespace SnakeFoods {
       const type_food: FoodType = foods_type[e.name];
 
       if (e.x == pos.x && e.y == pos.y) {
+        if (type_food.show_msg) GUI.addMessage(type_food.text)
         if (!type_food.isNotEat) remove_food_type(e)
         if (type_food.func) type_food.func(e);
         if (type_food.isOne) disable_food(e.name);
         if (type_food.disable_time) {
-          clearTimeout(type_food._timer)
-          type_food._timer = setTimeout(() => type_food.disabled(), type_food.disable_time * 1000);
+          GUI.addTimer(type_food.color, type_food.disable_time, () => type_food.disabled());
         }
-        if (Snake.onEat) Snake.onEat(type_food)
+
+        GUI.legendOpen(type_food.name, type_food.color);
       }
 
       tick(e);
     }
+
+    GUI.reduceTimerAll();
   }
 
   export function remove_food(name) {
@@ -97,14 +126,36 @@ namespace SnakeFoods {
 
   export function addFood(name: string, pos: Pos = null) {
     let food = foods_type[name];
-    if (!food || food.isDisable) return;
+
+    if (!food || food.isDisable) return console.log('Food not exist/food disable', name);
     let repeatability = food.repeatability;
     let timeout = food.timeout || -1;
-    if (repeatability != 1 && Math.random() > repeatability) return;
+    if (food.add_func && !food.add_func()) return;
+    if (!food.add_func && (repeatability != 1 && Math.random() > repeatability)) return;
+    if (food.pseudo && food.pseudo.length) {
+      let item = food.pseudo[Math.random() * food.pseudo.length >> 0];
+      food.color = foods_type[item].color;
+      console.log('set color', food.color)
+    }
+    if(food.rndColor){
+      let i = Math.random() * Vars.colors_food.length >> 0;
+      food.color = Vars.colors_food.slice(i, i+1)[0];
+      console.log('set color', food.color)
+    }
 
     pos = pos || rndPos();
     foods.unshift({ x: pos.x, y: pos.y, name, timeout });
     return true;
+  }
+
+  export function addFoodSmart(arrfoodname: string[]) {
+    if (!_iterationArr.length) {
+      _iterationArr = arrfoodname;
+      iteration++;
+    }
+    _iterationArr
+      .sample(Math.random() * 3 >> 0)
+      .forEach(e => addFood(e));
   }
 
   export function addFoodDev(name: string, pos: Pos = null) {
@@ -120,5 +171,8 @@ namespace SnakeFoods {
   export function get_color(name: string) {
     return foods_type[name].color;
   }
+
+
 }
 
+export default SnakeFood;

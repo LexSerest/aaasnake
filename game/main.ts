@@ -1,52 +1,35 @@
-/// <reference path="libs/libs.ts"/>
-/// <reference path="vars.ts"/>
-/// <reference path="libs/canvas.ts"/>
-/// <reference path="libs/snake.ts"/>
-/// <reference path="libs/player.ts"/>
-/// <reference path="libs/gui.ts"/>
-/// <reference path="libs/keyboard.ts"/>
-/// <reference path="libs/snakeFood.ts"/>
-/// <reference path="eats_types.ts"/>
+import Snake from './libs/snake';
+import Foods from './libs/snakeFood';
+import GUI from './libs/gui';
+import Keyboard from './libs/keyboard';
+import Player from './libs/player';
+import { Keys } from './helpers/enum';
+import { $ } from './helpers/helpers';
 
+setTimeout(e => {
+  let rev = $('script').src.split('app.')[1].slice(0, -3);
+  $('#rev').innerText = rev;
+}, 1000)
 
-Snake.onStart = function () {
-  GUI.updateScore();
-  GUI.legengReset();
-  GUI.clearTimer();
-}
+console.log(process.env)
+window.Foods = Foods;
+window.Player = Player;
 
-Snake.onEnd = function () {
-  GUI.window_open('endgame');
-  GUI.clearTimer();
-}
-
-Snake.onEat = function (food: FoodType) {
-  if (food.disable_time) GUI.addTimer(food.color, food.disable_time);
-  GUI.legendOpen(food.name, food.color);
-}
-
-Snake.onPause = function (isPause, isStart) {
-  if (!isStart) return;
-  if (isPause) GUI.window_open('pause');
-  else GUI.window_open('hide');
-}
-
-function start() {
-  GUI.window_open('hide');
-  Snake.start();
-}
-
-function unpause() { Snake.isPause && Snake.pause() }
-function pauseToggle() { Snake.pause() }
-function setting() { GUI.window_open('setting'); }
-function main() { GUI.window_open('start'); }
-
-function swipeToggle() { GUI.swipeToggle(); }
-function button_up() { Snake.keyboardEvent(Keyboard.Keys.Up) }
-function button_left() { Snake.keyboardEvent(Keyboard.Keys.Right) }
-function button_down() { Snake.keyboardEvent(Keyboard.Keys.Down) }
-function button_right() { Snake.keyboardEvent(Keyboard.Keys.Left) }
-
+window.Game = {
+  start() {
+    GUI.window_open('hide');
+    Snake.start();
+  },
+  unpause(){ Snake.isPause && Snake.pause() },
+  pauseToggle(){ Snake.pause() },
+  setting(){ GUI.window_open('setting'); },
+  main(){ GUI.window_open('start'); },
+  swipeToggle(){ GUI.swipeToggle(); },
+  button_up(){ Snake.keyboardEvent(Keys.Up) },
+  button_left(){ Snake.keyboardEvent(Keys.Right) },
+  button_down(){ Snake.keyboardEvent(Keys.Down) },
+  button_right(){ Snake.keyboardEvent(Keys.Left) }
+};
 
 GUI.swipeToggle(+localStorage.getItem('swipemode') || 0)
 Snake.init('#snake');

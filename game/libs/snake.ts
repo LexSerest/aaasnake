@@ -1,6 +1,17 @@
-enum Direction { Up, Right, Down, Left }
+import { $, $$ } from '../helpers/helpers';
+
+import Keyboard from './keyboard';
+import Player from './player'
+import { Vars } from '../vars';
+
+import Canvas from './canvas';
+import GUI from './gui';
+import SnakeFoods from './snakeFood';
+
+import { Direction, Keys } from '../helpers/enum'
 
 namespace Snake {
+
   export let isStart = false;
   export let isPause = false;
   export let isLockKeyboard = false;
@@ -9,42 +20,42 @@ namespace Snake {
   export let onEnd: Function = null;
   export let onEat: Function = null;
   export let onPause: Function = null;
-  let _timer = null;
-  let _lastKeysPress = [];
+  export let _timer = null;
+  export let _lastKeysPress = [];
 
-  function testDirection(e) {
-    if ((Keyboard.Keys.Up == e && Player.direction == Direction.Down) ||
-      (Keyboard.Keys.Down == e && Player.direction == Direction.Up) ||
-      (Keyboard.Keys.Left == e && Player.direction == Direction.Right) ||
-      (Keyboard.Keys.Right == e && Player.direction == Direction.Left) ||
-      (Keyboard.Keys.Up == e && Player.direction == Direction.Up) ||
-      (Keyboard.Keys.Down == e && Player.direction == Direction.Down) ||
-      (Keyboard.Keys.Left == e && Player.direction == Direction.Right) ||
-      (Keyboard.Keys.Right == e && Player.direction == Direction.Left)
+  export function testDirection(e) {
+    if ((Keys.Up == e && Player.direction == Direction.Down) ||
+      (Keys.Down == e && Player.direction == Direction.Up) ||
+      (Keys.Left == e && Player.direction == Direction.Right) ||
+      (Keys.Right == e && Player.direction == Direction.Left) ||
+      (Keys.Up == e && Player.direction == Direction.Up) ||
+      (Keys.Down == e && Player.direction == Direction.Down) ||
+      (Keys.Left == e && Player.direction == Direction.Right) ||
+      (Keys.Right == e && Player.direction == Direction.Left)
     )
       return true
   }
 
   export function keyboardEvent(e) {
-    if (Keyboard.Keys.Return == e) start()
-    if (Keyboard.Keys.Space == e) pause()
+    if (Keys.Return == e) start()
+    if (Keys.Space == e) pause()
 
-    if (Keyboard.Keys.Up != e &&
-      Keyboard.Keys.Down != e &&
-      Keyboard.Keys.Left != e &&
-      Keyboard.Keys.Right != e) return;
+    if (Keys.Up != e &&
+      Keys.Down != e &&
+      Keys.Left != e &&
+      Keys.Right != e) return;
 
     if (!isStart || isPause) return;
     let last = _lastKeysPress[_lastKeysPress.length - 1] || Player.direction;
     if (last == e ||
-      (Keyboard.Keys.Up == e && last == Direction.Down) ||
-      (Keyboard.Keys.Down == e && last == Direction.Up) ||
-      (Keyboard.Keys.Left == e && last == Direction.Right) ||
-      (Keyboard.Keys.Right == e && last == Direction.Left) ||
-      (Keyboard.Keys.Up == e && last == Direction.Up) ||
-      (Keyboard.Keys.Down == e && last == Direction.Down) ||
-      (Keyboard.Keys.Left == e && last == Direction.Left) ||
-      (Keyboard.Keys.Right == e && last == Direction.Right)
+      (Keys.Up == e && last == Direction.Down) ||
+      (Keys.Down == e && last == Direction.Up) ||
+      (Keys.Left == e && last == Direction.Right) ||
+      (Keys.Right == e && last == Direction.Left) ||
+      (Keys.Up == e && last == Direction.Up) ||
+      (Keys.Down == e && last == Direction.Down) ||
+      (Keys.Left == e && last == Direction.Left) ||
+      (Keys.Right == e && last == Direction.Right)
     ) return;
 
     if (_lastKeysPress.length < 3) _lastKeysPress.push(e);
@@ -53,12 +64,14 @@ namespace Snake {
   export function init(canvas_selector: string) {
     Canvas.init(canvas_selector);
     GUI.bestShow();
-    Keyboard.bind_keydown($('body'), e => keyboardEvent(e))
+    GUI.legendInit();
+    Keyboard.init_keyboard($('body'), e => keyboardEvent(e))
+    Keyboard.init_doubletap($('canvas'), e => keyboardEvent(e))
   }
 
   export function changeDirection(e) {
     if (testDirection(e)) return;
-    Player.direction = Direction[Keyboard.Keys[e]];
+    Player.direction = Direction[Keys[e]]
   }
 
 
@@ -71,10 +84,10 @@ namespace Snake {
         changeDirection(e);
       }
       if (isStart) {
-        Snake.move();
+        move();
         run();
       }
-    }, 300 - Player.speed * 3)
+    }, 300 - Player.speed * 2)
   }
 
   export function pause() {
@@ -87,7 +100,9 @@ namespace Snake {
 
     isPause = !isPause;
 
-    if (onPause) onPause(isPause, isStart);
+    if (!isStart) return;
+    if (isPause) GUI.window_open('pause');
+    else GUI.window_open('hide');
   }
 
   export function snake() {
@@ -98,7 +113,10 @@ namespace Snake {
 
   export function end() {
     isStart = false;
-    if (onEnd) onEnd();
+    if(onEnd) onEnd();
+    GUI.updateTime();
+    GUI.window_open('endgame');
+    GUI.clearTimer();
     GUI.updateBest();
   }
 
@@ -110,7 +128,8 @@ namespace Snake {
 
     Vars.set_default();
     Player.set_default();
-    SnakeFoods.foods_init(SnakeFoodsTypes.foods);
+    GUI.init();
+    SnakeFoods.init();
     Canvas.first();
 
     isStart = true;
@@ -120,7 +139,9 @@ namespace Snake {
     run();
     GUI.window_open('hide')
 
-    if (onStart) onStart();
+    GUI.updateScore();
+    GUI.legengReset();
+    GUI.clearTimer();
   }
 
   export function move() {
@@ -146,3 +167,5 @@ namespace Snake {
   }
 
 }
+
+export default Snake;

@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Pixel";
-  src: url("/static/pixel.otf") format("opentype");
+  src: url("pixel.otf") format("opentype");
 }
 
 body, html {
@@ -21,6 +21,7 @@ body {
   left: 0;
   right: 0;
   margin: 0 auto;
+  user-select: none;
 }
 main {
   display: flex;
@@ -161,12 +162,11 @@ h1.h1-title {
 }
 .legends {
   margin-left: 10px;
-
   padding-top: 25px;
   > div { 
-    margin: 0 0 3px; 
+    margin: 0 0 1px; 
     display: flex;
-    font-size: 13px;
+    font-size: 14px;
   }
 }
 #score {
@@ -204,8 +204,8 @@ h1.h1-title {
 
 .eat {
   margin-right: 5px;
-  height: 16px;
-  width: 16px;
+  height: 14px;
+  width: 14px;
 }
 .eat.notopen::after {
   content: '??';
@@ -226,19 +226,26 @@ h1.h1-title {
   overflow: hidden;
   .timer {
     height: 3px;
-    width: 0%;
-    animation-name: progress;
-    animation-timing-function: linear;
-    animation-direction: reverse;
+    width: 100%;
+    transition: width 1s ease;
   }
 }
 
 .block-column {
   display: flex;
 }
+@media only screen and (min-height: 700px){
+  .legends {
+    .eat {
+      margin-right: 7px;
+    }
+    > div {
+      font-size: 15px;
+    }
+  }
+}
 
-
-@media only screen and (max-height: 600px){
+@media only screen and (max-height: 580px){
   .move-buttons {
     bottom: 25px !important;
   }
@@ -246,8 +253,9 @@ h1.h1-title {
     display: none;
   }
   .legends {
+    padding-top: 0px !important;
     > div {
-      font-size: 12px;
+      font-size: 13px;
       margin-bottom: -2px !important;
     }
 
@@ -261,6 +269,7 @@ h1.h1-title {
 .button-setting-open {
   display: none;
 }
+
 
 @media only screen and (max-width: 500px){
   .button-setting-open {
@@ -288,6 +297,7 @@ h1.h1-title {
 
     > div {
       margin: 0 0 0 5px;
+      
     }
   }
 
@@ -367,6 +377,20 @@ $arrow-color: #000;
     margin: auto;
   }
 }
+@media screen and (min-width: 370px) {
+  .move-buttons {
+    width: 270px !important;
+    height: 175px !important;
+  }
+
+  .button-mini.move {
+    position: absolute;
+    width: 70px;
+    min-width: 0;
+    height: 70px;
+  }
+}
+
 .mobile { 
   &[data-type="swipe"] {
     > span { display: block; }
@@ -437,4 +461,73 @@ div#move_down {
   .button-mini {
     padding: 6px 13px;
   }
+}
+
+
+.ingame, .allingame {
+  position: absolute;
+  top: 3px;
+}
+
+.allingame {
+  right: 5px;
+}
+.ingame {
+  left: 0;
+  right: 0;
+  margin: auto;
+  text-align: center;
+}
+
+.messages {
+  position: absolute;
+  right: 0;
+  left: 0;
+  bottom: -20px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.message {
+  position: absolute;
+  color: #fff;
+  text-shadow: 2px 2px #000;
+  z-index: 99;
+  /* width: max-content; */
+  /* align-items: center; */
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  font-size: 20px;
+}
+
+.show {
+  animation: fadeIn 1.0s;
+  animation-timing-function: ease-in;
+  
+}
+
+@keyframes fadeIn {
+  0% {
+    visibility: visible;
+    opacity: 1;
+  }
+  100% {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-10px)
+  }
+}
+
+.pseudo {
+  background: linear-gradient(45deg, #000215, #002bff, #00ffcb)
+}
+
+div#rev {
+  position: absolute;
+  bottom: 0;
+  font-size: 13px;
+  color: #6f808e;
+  user-select: text;
 }

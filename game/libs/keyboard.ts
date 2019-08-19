@@ -1,8 +1,10 @@
-namespace Swipe {
-  enum Direction { Up = 38, Right = 37, Left = 39, Down = 40, Space = 32 }
+import { Keys } from '../helpers/enum';
+
+
+namespace Keyboard {
   export let swipeEnabled = true;
 
-  export function swipebind(element, f) {
+  export function swipebind(element: HTMLElement, f: Function) {
     let xDown = null;
     let yDown = null;
 
@@ -22,9 +24,9 @@ namespace Swipe {
       let yDiff = yDown - yUp;
 
       if (Math.abs(xDiff) > Math.abs(yDiff)) {
-        f(xDiff > 0 ? Direction.Right : Direction.Left)
+        f(xDiff > 0 ? Keys.Right : Keys.Left)
       } else {
-        f(yDiff > 0 ? Direction.Up : Direction.Down)
+        f(yDiff > 0 ? Keys.Up : Keys.Down)
       }
 
       xDown = null;
@@ -32,40 +34,34 @@ namespace Swipe {
     }, false);
   }
 
-  export function doubletap(element, f) {
-
+  export function doubletap(element: HTMLElement, f: Function) {
     var lastTap = 0;
-    var firstTap = 0;
-    // doubletap
 
     element.addEventListener('touchend', function (event) {
       var currentTime = new Date().getTime();
       var tapLength = currentTime - lastTap;
       if (tapLength < 300 && tapLength > 0) {
         event.preventDefault()
-        f(Direction.Space);
+        f(Keys.Space);
       }
       lastTap = currentTime;
     });
-
   }
+
+  export function setSwipe(status = true) {
+    swipeEnabled = status
+  }
+
+  export function init_keyboard(element: HTMLElement, f: Function) {
+    element.addEventListener('keydown', e => f(e.keyCode))
+    swipebind(element, e => f(e))
+  }
+
+  export function init_doubletap(element: HTMLElement, f: Function) {
+    doubletap(element, e => f(e))
+  }
+
+
 }
 
-
-
-namespace Keyboard {
-  export enum Keys {
-    Up = 38,
-    Right = 37,
-    Left = 39,
-    Down = 40,
-    Space = 32,
-    Return = 13
-  }
-
-  export function bind_keydown(selector: HTMLElement, f: Function) {
-    selector.addEventListener('keydown', e => f(e.keyCode))
-    Swipe.swipebind(selector, e => f(e))
-    Swipe.doubletap($('canvas'), e => f(e))
-  }
-}
+export default Keyboard;

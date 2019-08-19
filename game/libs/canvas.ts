@@ -1,29 +1,33 @@
+import { $ } from '../helpers/helpers';
+import { Vars } from '../vars';
+
 namespace Canvas {
+
   export let canvas: HTMLCanvasElement;
   export let context: CanvasRenderingContext2D;
-  let pixelRatio = window.devicePixelRatio;
-
+  export let pixelRatio = Math.round(window.devicePixelRatio);
+  
   export function init(canvas_selector: string) {
     canvas = $(canvas_selector);
     canvas.width = (Vars.defaultSizeMap * Vars.blockSize + Vars.border * 2) * pixelRatio;
     canvas.height = canvas.width;
-
+  
     // device scale
     canvas.style.width = (canvas.width / pixelRatio) + 'px';
     canvas.style.height = (canvas.height / pixelRatio) + 'px';
-
+  
     context = canvas.getContext("2d");
     context.imageSmoothingEnabled = false;
     first();
   }
-
+  
   export function fill(color: string, x1 = 0, y1 = 0, x2 = canvas.width, y2 = canvas.height) {
     context.beginPath();
     context.fillStyle = color;
     context.fillRect(x1, y1, x2, y2);
     context.restore();
   }
-
+  
   export function first() {
     fill(Vars.color_border);
     fill(
@@ -34,7 +38,7 @@ namespace Canvas {
       canvas.height - Vars.border * 2 * pixelRatio
     )
   }
-
+  
   export function drawBox(x: number, y: number, color = "#000") {
     context.beginPath();
     context.fillStyle = color;
@@ -47,3 +51,6 @@ namespace Canvas {
     context.restore();
   }
 }
+
+
+export default Canvas;

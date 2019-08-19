@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "outFile": "static/main.js",
+    "module": "commonjs",
     "sourceMap": true,
     "removeComments": true
   },

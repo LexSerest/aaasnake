@@ -1,6 +1,4 @@
-/// <reference path="libs/libs.ts"/>
-
-namespace DefaultVars {
+export namespace DefaultVars {
   export const blockSize = 15;
   export const border = 3;
   export const defaultSizeMap = 20;
@@ -16,7 +14,7 @@ namespace DefaultVars {
   ];
 }
 
-namespace Vars {
+export namespace Vars {
   export let blockSize = DefaultVars.blockSize;
   export let border = DefaultVars.border
   export let defaultSizeMap = DefaultVars.defaultSizeMap;
