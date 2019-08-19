@@ -11,10 +11,6 @@ setTimeout(e => {
   $('#rev').innerText = rev;
 }, 1000)
 
-console.log(process.env)
-window.Foods = Foods;
-window.Player = Player;
-
 window.Game = {
   start() {
     GUI.window_open('hide');
@@ -28,8 +24,10 @@ window.Game = {
   button_up(){ Snake.keyboardEvent(Keys.Up) },
   button_left(){ Snake.keyboardEvent(Keys.Right) },
   button_down(){ Snake.keyboardEvent(Keys.Down) },
-  button_right(){ Snake.keyboardEvent(Keys.Left) }
+  button_right(){ Snake.keyboardEvent(Keys.Left) },
+  clearScore(){ GUI.resetBest(); }
 };
 
 GUI.swipeToggle(+localStorage.getItem('swipemode') || 0)
 Snake.init('#snake');
+

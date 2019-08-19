@@ -129,6 +129,11 @@ namespace GUI {
     }
   }
 
+  export function resetBest() {
+    localStorage.setItem('best', '0');
+    $$('.best span').forEach(e => e.innerHTML = '0')
+  }
+
   export function swipeToggle(setState = undefined) {
     let isset = typeof setState == 'undefined';
     if (isset) {

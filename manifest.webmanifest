@@ -3,6 +3,8 @@
   "short_name": "AAASnake",
   "start_url": "/",
   "display": "standalone",
+  "background_color": "#737780",
+  "theme_color": "#737780",
   "orientation": "portrait-primary",
   "icons": [
     {

@@ -40,7 +40,7 @@
         </div>
         <div class="canvas-wrap">
           <div class="messages">
-            <div class="message">sdf</div>
+            <div class="message"></div>
           </div>
           <div class="timers">
             <div class="timer"></div>
@@ -101,7 +101,7 @@
 
   </main>
   <footer>
-    <a href="https://github.com/aaasnake/aaasnake.github.io">Source on GitHub</a>
+    <a href="https://github.com/LexSerest/aaasnake">Source on GitHub</a>
   </footer>
   <div id="rev"></div>
   <script src="app.js"></script>
@@ -112,14 +112,32 @@
 			navigator.serviceWorker.register(x)
       .then(function(registration) {
         console.log('Registration successful, scope is:', registration.scope);
+
+        registration.onupdatefound = () => {
+          const installingWorker = reg.installing;
+          installingWorker.onstatechange = () => {
+            switch (installingWorker.state) {
+              case 'installed':
+                if (navigator.serviceWorker.controller) {
+                  window.location.reload();
+                } 
+                break;
+            }
+          };
+        };
       })
       .catch(function(error) {
         console.log('Service worker registration failed, error:', error);
       });
-      
+
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        window.location.reload();
+      })
+
       window.addEventListener('beforeinstallprompt', function (e) {
         e.preventDefault();
       });
+
 		}
 	</script>
 </body>

@@ -5,4 +5,3 @@ import './game/main';
 try {
   require('./tg-integration')
 } catch {}
-

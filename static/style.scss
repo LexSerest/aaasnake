@@ -267,14 +267,11 @@ h1.h1-title {
 }
 
 .button-setting-open {
-  display: none;
+  display: block;
 }
 
 
 @media only screen and (max-width: 500px){
-  .button-setting-open {
-    display: block;
-  }
   .block-column {
     flex-direction: column;
     width: min-content;
