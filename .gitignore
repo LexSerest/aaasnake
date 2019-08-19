@@ -1,7 +1,0 @@
-node_modules
-package.json
-gulpfile.js
-dist/
-tg-integration.js
-.cache/
-.vscode/
