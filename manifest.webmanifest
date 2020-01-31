@@ -1,7 +1,7 @@
 {
   "name": "AAASnake!",
   "short_name": "AAASnake",
-  "start_url": ".",
+  "start_url": "https://lexserest.github.io/aaasnake/",
   "display": "standalone",
   "background_color": "#737780",
   "theme_color": "#737780",
