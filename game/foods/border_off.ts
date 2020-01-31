@@ -16,7 +16,6 @@ export default {
     Vars.color_border = DefaultVars.color_border;
   },
   func: () => {
-    Player.inc();
     Player.isWall = false;
     Vars.color_border = '#C0C5CE';
   }

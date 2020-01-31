@@ -13,16 +13,15 @@ export default {
   timeout: 30,
   color: "#fff",
   add_func: () => {
-    if(Math.random() * 100 < 80){ // 80%
+    if (Math.random() * 100 < 80) { // 80%
       SnakeFoods.addFood('score_x2', null, true);
       return true
     }
   },
   func: () => {
     let rnd = Math.random() * 2 >> 0;
-    Player.addScore(rnd ? Player.getScore() : -Player.getScore()/2 >> 0);
+    Player.addScore(rnd ? Player.getScore() : -Player.getScore() / 2 >> 0);
     GUI.addMessage(rnd ? 'Score x2' : 'Score /2')
     SnakeFoods.remove_food('score_x2')
-    Player.inc();
   }
 }
