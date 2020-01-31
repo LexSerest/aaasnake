@@ -2,3 +2,4 @@ node_modules
 tg-integration.js
 .cache/
 .vscode/
+dist
