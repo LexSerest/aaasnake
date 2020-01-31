@@ -11,7 +11,6 @@ export default {
   repeatability: 1, // 1/ 1
   timeout: 30,
   func: () => {
-    Player.inc();
     Player.addScore(1000);
   }
 }

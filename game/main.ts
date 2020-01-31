@@ -25,7 +25,10 @@ window.Game = {
   button_left(){ Snake.keyboardEvent(Keys.Right) },
   button_down(){ Snake.keyboardEvent(Keys.Down) },
   button_right(){ Snake.keyboardEvent(Keys.Left) },
-  clearScore(){ GUI.resetBest(); }
+  clearScore(){ GUI.resetBest(); },
+  Foods,
+  GUI,
+  Player
 };
 
 GUI.swipeToggle(+localStorage.getItem('swipemode') || 0)

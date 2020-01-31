@@ -60,6 +60,8 @@ namespace GUI {
 
 
     SnakeFoods.forEach(food => {
+      if(food.notLegend) return;
+
       let div = document.createElement('div');
       let eat = document.createElement('div');
       let span = document.createElement('span');
@@ -146,14 +148,15 @@ namespace GUI {
   }
 
 
-  export function addMessage(text: string) {
+  export function addMessage(text: string, color = '#fff') {
     let element = document.createElement('div');
     element.classList.add('message');
     element.classList.add('show');
     element.innerText = text;
+    element.style.color = color;
 
     $('.messages').append(element)
-    setTimeout(e => element.remove(), 2000)
+    setTimeout(e => element.remove(), 3000)
   }
 
 }

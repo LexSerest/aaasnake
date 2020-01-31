@@ -10,7 +10,7 @@ export namespace DefaultVars {
   export const colors_food = [
     '#b52828', '#b5289d', '#5828b5', '#288eb5', '#28b594', '#b5b128',
     '#ea9a9a', '#ea9ae4', '#337341', '#9aeaab', '#c4ea9a', '#ead59a',
-    '#FFFFFF', '#0e0086', '#860038'
+    '#0e0086', '#860038'
   ];
 }
 

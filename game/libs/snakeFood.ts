@@ -36,7 +36,7 @@ namespace SnakeFood {
   export function draw() {
     for (let i = 0; i < foods.length; i++) {
       let e = foods[i];
-      Canvas.drawBox(e.x, e.y, get_color(e.name))
+      Canvas.drawBox(e.x, e.y, Snake.isPause ? Vars.color_border : get_color(e.name))
     }
   }
 
@@ -75,9 +75,9 @@ namespace SnakeFood {
       const type_food: FoodType = foods_type[e.name];
 
       if (e.x == pos.x && e.y == pos.y) {
+        if (type_food.func) type_food.func(e);
         if (type_food.show_msg) GUI.addMessage(type_food.text)
         if (!type_food.isNotEat) remove_food_type(e)
-        if (type_food.func) type_food.func(e);
         if (type_food.isOne) disable_food(e.name);
         if (type_food.disable_time) {
           GUI.addTimer(type_food.color, type_food.disable_time, () => type_food.disabled());
@@ -124,14 +124,16 @@ namespace SnakeFood {
     return { x, y };
   }
 
-  export function addFood(name: string, pos: Pos = null) {
+  export function addFood(name: string, pos: Pos = null, add_implicitly = false) {
     let food = foods_type[name];
-
-    if (!food || food.isDisable) return console.log('Food not exist/food disable', name);
     let repeatability = food.repeatability;
+    if (!food || food.isDisable) return console.log('Food not exist/food disable', name);
     let timeout = food.timeout || -1;
-    if (food.add_func && !food.add_func()) return;
-    if (!food.add_func && (repeatability != 1 && Math.random() > repeatability)) return;
+
+    if(!add_implicitly){
+      if (food.add_func && !food.add_func()) return;
+      if (!food.add_func && (repeatability != 1 && Math.random() > repeatability)) return;
+    }
     if (food.pseudo && food.pseudo.length) {
       let item = food.pseudo[Math.random() * food.pseudo.length >> 0];
       food.color = foods_type[item].color;
@@ -148,14 +150,17 @@ namespace SnakeFood {
     return true;
   }
 
-  export function addFoodSmart(arrfoodname: string[]) {
+  export function addFoodSmart(arrfoodname: any) {
     if (!_iterationArr.length) {
       _iterationArr = arrfoodname;
       iteration++;
     }
     _iterationArr
       .sample(Math.random() * 3 >> 0)
-      .forEach(e => addFood(e));
+      .forEach(e => {
+        if(Array.isArray(e)) e.forEach(i => addFood(i))
+        else addFood(e)
+      });
   }
 
   export function addFoodDev(name: string, pos: Pos = null) {

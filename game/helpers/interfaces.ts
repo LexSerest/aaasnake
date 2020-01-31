@@ -25,6 +25,7 @@ declare global {
     show_msg?: boolean;
     text: string;
     rndColor?: boolean;
+    notLegend?: boolean;
   }
   interface Food {
     x: number;

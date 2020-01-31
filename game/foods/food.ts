@@ -13,7 +13,11 @@ export default {
     Player.inc();
     Player.addScore();
     SnakeFoods.addFood('eat');
-    setTimeout(e => SnakeFoods.addFood('feces', Player.pos), 100)
+    setTimeout(e => {
+      let rnd = Math.random() * 100;
+      if (rnd < 5) SnakeFoods.addFood('score_x3', Player.pos)
+      if (rnd >= 30) SnakeFoods.addFood('feces', Player.pos)
+    }, 100)
 
     SnakeFoods.addFoodSmart([
       'border_off',
@@ -22,11 +26,9 @@ export default {
       'speed_add',
       'size_add',
       'score_x2',
-      'lessen',
       'score_1000',
       'splitfood',
-      'clean',
-      'reset'
+      'clean'
     ])
   }
 }

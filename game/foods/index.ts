@@ -12,10 +12,11 @@ import SizeReduce from './size_reduce';
 import SpeedAdd from './speed_add';
 import SpeedReduce from './speed_reduce';
 import SplitFood from './splitfood';
+// import Wtf from './wtf';
 
 const foods: FoodType[] = [
-  Food, Feces, Lessen, Score_x2, Score1000, Reset, Clean, BorderOff, 
-  SizeAdd, SizeReduce, SpeedAdd, SpeedReduce, SplitFood
+  Food, Feces, Lessen, Score_x2, Score1000, Clean, BorderOff,
+  SizeAdd, SizeReduce, SpeedAdd, SpeedReduce, SplitFood, Score_x3
 ]
 
 export default foods;

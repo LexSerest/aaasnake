@@ -11,13 +11,12 @@ export default {
   show_msg: true,
   timeout: 30,
   func: () => {
-    Player.inc();
     SnakeFoods.rndColorReset();
     SnakeFoods.foods_init();
     Object.keys(GUI._timers).forEach( e => GUI._timers[e].func())
     GUI._timers = {};
     GUI.clearTimer();
-    SnakeFoods.foods = SnakeFoods.foods.filter(e => e.name == "feces")
+    SnakeFoods.foods = SnakeFoods.foods.filter(e => e.name == "feces" )
     SnakeFoods.addFood('eat');
     setTimeout(e => GUI.legengReset(), 100);
   }

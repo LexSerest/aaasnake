@@ -11,7 +11,8 @@ export default {
   repeatability: 1, // 1
   timeout: 30,
   func: () => {
-    Player.inc();
     SnakeFoods.remove_food('feces')
+    SnakeFoods.remove_food('score_x3')
+    SnakeFoods.remove_food('wtf')
   }
 }

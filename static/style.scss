@@ -245,7 +245,7 @@ h1.h1-title {
   }
 }
 
-@media only screen and (max-height: 580px){
+@media only screen and (max-height: 580px) and (max-width: 500px){
   .move-buttons {
     bottom: 25px !important;
   }
@@ -500,7 +500,7 @@ div#move_down {
 }
 
 .show {
-  animation: fadeIn 1.0s;
+  animation: fadeIn 2.0s;
   animation-timing-function: ease-in;
   
 }

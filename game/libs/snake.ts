@@ -87,7 +87,7 @@ namespace Snake {
         move();
         run();
       }
-    }, 300 - Player.speed * 2)
+    }, 300 - Player.speed * 3)
   }
 
   export function pause() {
@@ -103,6 +103,7 @@ namespace Snake {
     if (!isStart) return;
     if (isPause) GUI.window_open('pause');
     else GUI.window_open('hide');
+    SnakeFoods.draw()
   }
 
   export function snake() {
@@ -113,7 +114,7 @@ namespace Snake {
 
   export function end() {
     isStart = false;
-    if(onEnd) onEnd();
+    if (onEnd) onEnd();
     GUI.updateTime();
     GUI.window_open('endgame');
     GUI.clearTimer();
