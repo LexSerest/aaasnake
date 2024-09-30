@@ -4,7 +4,7 @@
 
 A snake that will make you scream with _joy_
 
-[__Play online__](https://snake.t4t.cc/)
+[__Play online__](https://lexserest.github.io/aaasnake/)
 
 ## Features
 - Lots of bonuses
